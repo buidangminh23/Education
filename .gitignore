@@ -1,0 +1,8 @@
+# Ignored directories
+Web/node_modules
+Web/dist
+Web/dist-ssr
+
+# System files
+.DS_Store
+Thumbs.db
