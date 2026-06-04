@@ -462,6 +462,50 @@ const initialEbooks = [
   { id: 'EB03', title: 'Cẩm nang viết Nghị luận văn học đạt điểm 9+', category: 'Ngữ văn', readingLink: 'https://images.unsplash.com/photo-1456513080510-7bf3a84b82f8?w=800&auto=format&fit=crop&q=60' }
 ];
 
+// ── WEB LAB SIMULATIONS ──────────────────────────────────────────────────────
+const initialLabSimulations = [
+  { id: 'LAB01', studentId: 'HS001', type: 'physics', title: 'Mạch RLC Cộng Hưởng', params: { R: 10, L: 100, C: 10 }, result: 'Tần số cộng hưởng: 159.15 Hz', date: '2026-06-03' },
+  { id: 'LAB02', studentId: 'HS001', type: 'chemistry', title: 'Phản ứng Axit - Bazơ', params: { chemicalA: 'HCl', chemicalB: 'NaOH' }, result: 'Phản ứng tạo muối NaCl và nước H2O. Hiện tượng: Cốc đổi màu từ hồng sang không màu (khi có Phenolphthalein).', date: '2026-06-02' }
+];
+
+// ── AI ESSAY SUBMISSIONS ─────────────────────────────────────────────────────
+const initialEssaySubmissions = [
+  { id: 'ES01', studentId: 'HS001', studentName: 'Nguyễn Hoàng Nam', subject: 'English', title: 'The Importance of AI in Modern Education', content: 'In today\'s society, artificial intelligence plays an increasingly vital role. Especially in education, AI can customize learning paths, assist teachers in grading, and provide students with real-time feedback. However, we should also notice the importance of human touch in classrooms.', aiEvaluation: { score: 8.5, grammarErrorsCount: 1, suggestions: ['Consider replacing "notice" with "be aware of" for better professional tone.'] }, teacherFeedback: { score: 9.0, comment: 'Bài viết rất mạch lạc, cấu trúc câu đa dạng. Thầy đồng ý với nhận xét của AI.', approved: true }, date: '2026-06-03' },
+  { id: 'ES02', studentId: 'HS003', studentName: 'Phan Minh Triết', subject: 'Literature', title: 'Phân tích nhân vật Tràng trong tác phẩm Vợ Nhặt', content: 'Nhân vật Tràng trong truyện ngắn Vợ nhặt của nhà văn Kim Lân là một hình tượng nhân vật độc đáo, đại diện cho những người nông dân nghèo khổ trước cách mạng tháng Tám. Dù cuộc sống đói khát bủa vây, Tràng vẫn khao khát hạnh phúc gia đình và giữ vững tấm lòng nhân hậu.', aiEvaluation: { score: 7.8, grammarErrorsCount: 0, suggestions: ['Nên mở rộng phân tích chi tiết bữa cơm ngày đói để làm nổi bật tình thân gia đình.'] }, teacherFeedback: { score: 0, comment: '', approved: false }, date: '2026-06-04' }
+];
+
+// ── SMART BUS ROUTES ──────────────────────────────────────────────────────────
+const initialBusRoutes = [
+  { id: 'BUS01', name: 'Tuyến Xe Cầu Giấy - Đống Đa', driverName: 'Bác Nguyễn Văn Tài', plateNumber: '29B-123.45', status: 'idle', currentStopIndex: 0, stops: ['Cổng trường', 'Ngã tư Cầu Giấy', 'Trần Duy Hưng', 'Nguyễn Chí Thanh', 'Chùa Láng'], studentsRegistered: ['HS001', 'HS003'] },
+  { id: 'BUS02', name: 'Tuyến Xe Ba Đình - Tây Hồ', driverName: 'Bác Lê Hoàng Hải', plateNumber: '29B-987.65', status: 'idle', currentStopIndex: 0, stops: ['Cổng trường', 'Lăng Bác', 'Thụy Khuê', 'Lạc Long Quân', 'Xuân La'], studentsRegistered: ['HS002'] }
+];
+
+const initialBusScanLogs = [
+  { id: 'BSL01', studentId: 'HS001', studentName: 'Nguyễn Hoàng Nam', routeId: 'BUS01', time: '07:15', direction: 'boarding', stopName: 'Nguyễn Chí Thanh' },
+  { id: 'BSL02', studentId: 'HS001', studentName: 'Nguyễn Hoàng Nam', routeId: 'BUS01', time: '07:45', direction: 'deboarding', stopName: 'Cổng trường' }
+];
+
+// ── STUDENT PORTFOLIOS ───────────────────────────────────────────────────────
+const initialStudentPortfolios = [
+  { studentId: 'HS001', studentName: 'Nguyễn Hoàng Nam', extracurricularAchievements: ['Đạt giải nhất cuộc thi Tin học trẻ thành phố', 'Thành viên cốt cán CLB Sách & Thơ học đường', 'Tình nguyện viên chiến dịch Mùa hè xanh 2025'], blockchainSignature: { signedBy: 'Hiệu trưởng Nguyễn Văn Hùng', date: '2026-06-02', hash: '8f3c7e2b1a9c8f7d6e5d4c3b2a1a0f9e8d7c6b5a4f3e2d1c0b9a8f7e6d5c4b3a' }, isPublic: true },
+  { studentId: 'HS002', studentName: 'Lê Mai Chi', extracurricularAchievements: ['Giải Nhì học sinh giỏi Toán cấp Tỉnh', 'Đội trưởng CLB Thiện nguyện Trái tim hồng'], blockchainSignature: null, isPublic: false }
+];
+
+// ── AI TIMETABLE SLOTS & TEACHER AVAILABILITY ───────────────────────────────
+const initialTimetableSlots = [
+  { id: 'TBT01', classTarget: '12A1', dayOfWeek: 'Thứ 2', period: 1, subject: 'Toán học', teacherName: 'Nguyễn Minh Triết', room: 'Phòng 402' },
+  { id: 'TBT02', classTarget: '12A1', dayOfWeek: 'Thứ 2', period: 2, subject: 'Ngữ văn', teacherName: 'Trần Thị Hồng Vân', room: 'Phòng 402' },
+  { id: 'TBT03', classTarget: '12A1', dayOfWeek: 'Thứ 2', period: 3, subject: 'Vật lý', teacherName: 'Phạm Đức Duy', room: 'Phòng 402' },
+  { id: 'TBT04', classTarget: '12A1', dayOfWeek: 'Thứ 2', period: 4, subject: 'Tiếng Anh', teacherName: 'Lê Thu Hà', room: 'Phòng 402' }
+];
+
+const initialTeacherAvailability = [
+  { teacherId: 'T01', teacherName: 'Nguyễn Minh Triết', busySlots: [{ dayOfWeek: 'Thứ 3', period: 3 }, { dayOfWeek: 'Thứ 5', period: 1 }] },
+  { teacherId: 'T02', teacherName: 'Trần Thị Hồng Vân', busySlots: [{ dayOfWeek: 'Thứ 2', period: 4 }] },
+  { teacherId: 'T03', teacherName: 'Phạm Đức Duy', busySlots: [{ dayOfWeek: 'Thứ 4', period: 2 }] },
+  { teacherId: 'T04', teacherName: 'Lê Thu Hà', busySlots: [{ dayOfWeek: 'Thứ 5', period: 4 }] }
+];
+
 export const AppProvider = ({ children }) => {
   const [theme] = useState('light');
   
@@ -576,6 +620,42 @@ export const AppProvider = ({ children }) => {
       { id: 'E01', teacherId: 'T01', teacherName: 'Nguyễn Minh Triết', raterRole: 'student', raterName: 'Nguyễn Hoàng Nam', rating: 5, comment: 'Thầy Triết giảng Toán rất dễ hiểu, nhiệt tình hướng dẫn bài tập nâng cao cho lớp học.', date: '2026-06-02' },
       { id: 'E02', teacherId: 'T02', teacherName: 'Trần Thị Hồng Vân', raterRole: 'parent', raterName: 'Nguyễn Văn Hùng', rating: 4, comment: 'Cô giảng Văn sâu sắc, giúp các cháu tiếp thu tốt bài viết nghị luận xã hội.', date: '2026-06-01' }
     ];
+  });
+
+  // ── 5 New Premium Features States ──────────────────────────────────────────
+  const [labSimulations, setLabSimulations] = useState(() => {
+    const saved = localStorage.getItem('labSimulations');
+    return saved ? JSON.parse(saved) : initialLabSimulations;
+  });
+
+  const [essaySubmissions, setEssaySubmissions] = useState(() => {
+    const saved = localStorage.getItem('essaySubmissions');
+    return saved ? JSON.parse(saved) : initialEssaySubmissions;
+  });
+
+  const [busRoutes, setBusRoutes] = useState(() => {
+    const saved = localStorage.getItem('busRoutes');
+    return saved ? JSON.parse(saved) : initialBusRoutes;
+  });
+
+  const [busScanLogs, setBusScanLogs] = useState(() => {
+    const saved = localStorage.getItem('busScanLogs');
+    return saved ? JSON.parse(saved) : initialBusScanLogs;
+  });
+
+  const [studentPortfolios, setStudentPortfolios] = useState(() => {
+    const saved = localStorage.getItem('studentPortfolios');
+    return saved ? JSON.parse(saved) : initialStudentPortfolios;
+  });
+
+  const [timetableSlots, setTimetableSlots] = useState(() => {
+    const saved = localStorage.getItem('timetableSlots');
+    return saved ? JSON.parse(saved) : initialTimetableSlots;
+  });
+
+  const [teacherAvailability] = useState(() => {
+    const saved = localStorage.getItem('teacherAvailability');
+    return saved ? JSON.parse(saved) : initialTeacherAvailability;
   });
 
   const [assignments, setAssignments] = useState(() => {
@@ -893,6 +973,31 @@ export const AppProvider = ({ children }) => {
   useEffect(() => {
     localStorage.setItem('teacherAttendance', JSON.stringify(teacherAttendance));
   }, [teacherAttendance]);
+
+  // Sync 5 New Premium Features States
+  useEffect(() => {
+    localStorage.setItem('labSimulations', JSON.stringify(labSimulations));
+  }, [labSimulations]);
+
+  useEffect(() => {
+    localStorage.setItem('essaySubmissions', JSON.stringify(essaySubmissions));
+  }, [essaySubmissions]);
+
+  useEffect(() => {
+    localStorage.setItem('busRoutes', JSON.stringify(busRoutes));
+  }, [busRoutes]);
+
+  useEffect(() => {
+    localStorage.setItem('busScanLogs', JSON.stringify(busScanLogs));
+  }, [busScanLogs]);
+
+  useEffect(() => {
+    localStorage.setItem('studentPortfolios', JSON.stringify(studentPortfolios));
+  }, [studentPortfolios]);
+
+  useEffect(() => {
+    localStorage.setItem('timetableSlots', JSON.stringify(timetableSlots));
+  }, [timetableSlots]);
 
   // Actions
   const logout = () => {
@@ -1796,6 +1901,341 @@ export const AppProvider = ({ children }) => {
     }
   };
 
+  // ── 5 New Premium Modules Actions ──────────────────────────────────────────
+
+  // 1. Web Lab Actions
+  const runPhysicsRLC = (studentId, R, L, C) => {
+    const rVal = parseFloat(R);
+    const lVal = parseFloat(L); // mH
+    const cVal = parseFloat(C); // uF
+    const lHenry = lVal * 0.001;
+    const cFarad = cVal * 0.000001;
+    
+    const fRes = lHenry > 0 && cFarad > 0 ? (1 / (2 * Math.PI * Math.sqrt(lHenry * cFarad))) : 0;
+    const XL = 2 * Math.PI * fRes * lHenry;
+    const XC = fRes > 0 && cFarad > 0 ? (1 / (2 * Math.PI * fRes * cFarad)) : 0;
+    const Z_resonance = rVal; // at resonance, Z = R
+
+    const id = 'LS' + Date.now();
+    const newSim = {
+      id,
+      studentId,
+      type: 'physics',
+      params: { R: rVal, L: lVal, C: cVal },
+      result: {
+        fRes: Math.round(fRes * 100) / 100,
+        XL: Math.round(XL * 100) / 100,
+        XC: Math.round(XC * 100) / 100,
+        Z: Math.round(Z_resonance * 100) / 100,
+        summary: `Tần số cộng hưởng: ${fRes.toFixed(2)} Hz. Tại tần số này, cảm kháng bằng dung kháng (${XL.toFixed(2)} Ω) và tổng trở mạch đạt cực tiểu Z = R = ${rVal} Ω.`
+      },
+      date: new Date().toISOString().split('T')[0]
+    };
+
+    setLabSimulations(prev => [newSim, ...prev]);
+    return newSim;
+  };
+
+  const runChemistryReaction = (studentId, chemicalA, chemicalB) => {
+    const cleanA = chemicalA.trim();
+    const cleanB = chemicalB.trim();
+    let eqn = `${cleanA} + ${cleanB} → ?`;
+    let color = '#64748b'; // default slate color
+    let phenomenon = 'Không xảy ra hiện tượng phản ứng hóa học rõ rệt (hoặc chỉ hòa tan thông thường).';
+    let status = 'no_reaction';
+
+    const mix = `${cleanA}+${cleanB}`;
+    const reverseMix = `${cleanB}+${cleanA}`;
+
+    if (mix === 'HCl+NaOH' || reverseMix === 'HCl+NaOH') {
+      eqn = 'HCl + NaOH → NaCl + H₂O';
+      color = '#10b981'; // green for neutral water
+      phenomenon = 'Phản ứng trung hòa tỏa nhiệt nhẹ. Dung dịch chuyển sang môi trường trung tính (pH ≈ 7). Nếu có chỉ thị Phenolphthalein, màu hồng của dung dịch kiềm sẽ bị mất màu hoàn toàn.';
+      status = 'success';
+    } else if (mix === 'CuSO4+NaOH' || reverseMix === 'CuSO4+NaOH') {
+      eqn = 'CuSO₄ + 2NaOH → Cu(OH)₂↓ + Na₂SO₄';
+      color = '#0ea5e9'; // blue for blue precipitate
+      phenomenon = 'Xuất hiện kết tủa dạng keo màu xanh lam của Đồng(II) hydroxide Cu(OH)₂ không tan trong nước.';
+      status = 'success';
+    } else if (mix === 'FeCl3+KSCN' || reverseMix === 'FeCl3+KSCN') {
+      eqn = 'FeCl₃ + 3KSCN ⇄ Fe(SCN)₃ + 3KCl';
+      color = '#b91c1c'; // blood red
+      phenomenon = 'Dung dịch lập tức chuyển sang màu đỏ máu đặc trưng của phức chất sắt thiocyanate Fe(SCN)₃.';
+      status = 'success';
+    } else if (mix === 'Na2CO3+HCl' || reverseMix === 'Na2CO3+HCl') {
+      eqn = 'Na₂CO₃ + 2HCl → 2NaCl + H₂O + CO₂↑';
+      color = '#f59e0b'; // orange for gas bubbles
+      phenomenon = 'Có hiện tượng sủi bọt khí mạnh của khí Carbon dioxide (CO₂) thoát ra khỏi cốc thủy tinh.';
+      status = 'success';
+    }
+
+    const id = 'LS' + Date.now();
+    const newSim = {
+      id,
+      studentId,
+      type: 'chemistry',
+      params: { chemicalA: cleanA, chemicalB: cleanB },
+      result: {
+        equation: eqn,
+        color,
+        phenomenon,
+        status
+      },
+      date: new Date().toISOString().split('T')[0]
+    };
+
+    setLabSimulations(prev => [newSim, ...prev]);
+    return newSim;
+  };
+
+  // 2. Essay Grader Actions
+  const submitEssayForAiGrading = (studentId, studentName, subject, title, content) => {
+    const cleanContent = content || '';
+    const wordCount = cleanContent.split(/\s+/).filter(Boolean).length;
+    
+    let score;
+    let grammarErrors;
+    let suggestions = [];
+
+    if (subject === 'English') {
+      grammarErrors = Math.max(1, Math.floor(10 - wordCount / 40));
+      if (cleanContent.toLowerCase().includes('good')) {
+        suggestions.push('Nên thay thế từ "good" bằng các tính từ học thuật hơn như "excellent", "beneficial", "valuable".');
+      }
+      if (cleanContent.toLowerCase().includes('very')) {
+        suggestions.push('Hạn chế dùng từ giảm nhẹ "very", nên thay thế bằng các trạng từ mạnh như "significantly", "remarkably".');
+      }
+      if (wordCount < 100) {
+        score = 6.5;
+        suggestions.push('Bài luận quá ngắn. Cần mở rộng bài viết tối thiểu 150-250 từ để đạt điểm cao.');
+      } else if (wordCount > 200) {
+        score = 8.8;
+      } else {
+        score = 7.8;
+      }
+    } else { // Literature
+      grammarErrors = Math.max(0, Math.floor(5 - wordCount / 80));
+      if (!cleanContent.toLowerCase().includes('nhân vật') && !cleanContent.toLowerCase().includes('nhân đạo')) {
+        suggestions.push('Nên bổ sung phân tích sâu về giá trị nhân đạo hoặc các chi tiết đặc tả nội tâm nhân vật.');
+      }
+      if (wordCount < 150) {
+        score = 6.8;
+        suggestions.push('Bài viết hơi sơ sài. Cần trích dẫn thêm các câu thơ/văn tiêu biểu của tác phẩm để tăng sức thuyết phục.');
+      } else if (wordCount > 300) {
+        score = 8.5;
+      } else {
+        score = 7.5;
+      }
+    }
+
+    const id = 'ES' + Date.now();
+    const newSubmission = {
+      id,
+      studentId,
+      studentName,
+      subject,
+      title,
+      content,
+      aiEvaluation: {
+        score,
+        grammarErrorsCount: grammarErrors,
+        suggestions
+      },
+      teacherFeedback: {
+        score: 0,
+        comment: '',
+        approved: false
+      },
+      date: new Date().toISOString().split('T')[0]
+    };
+
+    setEssaySubmissions(prev => [newSubmission, ...prev]);
+    return newSubmission;
+  };
+
+  const approveOrEditEssayGrade = (essayId, finalScore, comment) => {
+    setEssaySubmissions(prev => prev.map(es => {
+      if (es.id === essayId) {
+        return {
+          ...es,
+          teacherFeedback: {
+            score: parseFloat(finalScore),
+            comment,
+            approved: true
+          }
+        };
+      }
+      return es;
+    }));
+  };
+
+  // 3. Bus Tracker Actions
+  const simulateBusMove = (routeId) => {
+    setBusRoutes(prev => prev.map(route => {
+      if (route.id === routeId) {
+        const nextStopIndex = (route.currentStopIndex + 1) % route.stops.length;
+        const currentStopName = route.stops[nextStopIndex];
+        const status = nextStopIndex === 0 ? 'idle' : 'driving';
+        
+        if (route.studentsRegistered.length > 0 && Math.random() > 0.3) {
+          const randomStudentId = route.studentsRegistered[Math.floor(Math.random() * route.studentsRegistered.length)];
+          const targetStudent = students.find(s => s.id === randomStudentId);
+          if (targetStudent) {
+            const timeStr = new Date().toTimeString().split(' ')[0].substring(0, 5);
+            const isBoarding = nextStopIndex > 0 && nextStopIndex < route.stops.length - 1;
+            const newScan = {
+              id: 'BSL' + Date.now(),
+              studentId: randomStudentId,
+              studentName: targetStudent.name,
+              routeId,
+              time: timeStr,
+              direction: isBoarding ? 'boarding' : 'deboarding',
+              stopName: currentStopName
+            };
+            setBusScanLogs(prevLogs => [newScan, ...prevLogs]);
+
+            addNotification({
+              type: 'bulletin',
+              title: isBoarding ? 'Học sinh lên xe bus' : 'Học sinh xuống xe bus',
+              body: `Em ${targetStudent.name} đã quét mã ${isBoarding ? 'LÊN' : 'XUỐNG'} xe bus tuyến ${route.plateNumber} tại trạm: ${currentStopName}`,
+              targetRole: 'parent',
+              targetId: randomStudentId
+            });
+          }
+        }
+
+        return {
+          ...route,
+          currentStopIndex: nextStopIndex,
+          status
+        };
+      }
+      return route;
+    }));
+  };
+
+  const parentRegisterBusRoute = (studentId, routeId) => {
+    setBusRoutes(prev => prev.map(route => {
+      if (route.id === routeId && !route.studentsRegistered.includes(studentId)) {
+        return {
+          ...route,
+          studentsRegistered: [...route.studentsRegistered, studentId]
+        };
+      }
+      if (route.id !== routeId && route.studentsRegistered.includes(studentId)) {
+        return {
+          ...route,
+          studentsRegistered: route.studentsRegistered.filter(id => id !== studentId)
+        };
+      }
+      return route;
+    }));
+  };
+
+  // 4. Student Portfolio Actions
+  const updatePortfolioAchievements = (studentId, achievementsArray) => {
+    setStudentPortfolios(prev => {
+      const idx = prev.findIndex(p => p.studentId === studentId);
+      if (idx > -1) {
+        return prev.map(p => p.studentId === studentId ? { ...p, extracurricularAchievements: achievementsArray, blockchainSignature: null } : p);
+      } else {
+        const std = students.find(s => s.id === studentId);
+        return [...prev, {
+          studentId,
+          studentName: std ? std.name : 'Học sinh',
+          extracurricularAchievements: achievementsArray,
+          blockchainSignature: null,
+          isPublic: false
+        }];
+      }
+    });
+  };
+
+  const signPortfolioBgh = (studentId, signerName) => {
+    setStudentPortfolios(prev => prev.map(p => {
+      if (p.studentId === studentId) {
+        const contentString = `${p.studentName}_${p.extracurricularAchievements.join(',')}_${Date.now()}`;
+        
+        let hashVal = 0;
+        for (let i = 0; i < contentString.length; i++) {
+          const char = contentString.charCodeAt(i);
+          hashVal = (hashVal << 5) - hashVal + char;
+          hashVal = hashVal & hashVal;
+        }
+        const hexHash = Math.abs(hashVal).toString(16).padEnd(8, '0') + Math.random().toString(16).substring(2, 10) + '8f3c7e2b1a9c8f7d6e5d4c3b2a1a0f9e';
+        
+        return {
+          ...p,
+          blockchainSignature: {
+            signedBy: signerName,
+            date: new Date().toISOString().split('T')[0],
+            hash: hexHash.substring(0, 64)
+          }
+        };
+      }
+      return p;
+    }));
+  };
+
+  const togglePortfolioPublic = (studentId) => {
+    setStudentPortfolios(prev => prev.map(p => p.studentId === studentId ? { ...p, isPublic: !p.isPublic } : p));
+  };
+
+  // 5. AI Timetable Actions
+  const generateSmartTimetable = () => {
+    const teachersList = [
+      { name: 'Nguyễn Minh Triết', subject: 'Toán học' },
+      { name: 'Trần Thị Hồng Vân', subject: 'Ngữ văn' },
+      { name: 'Phạm Đức Duy', subject: 'Vật lý' },
+      { name: 'Lê Thu Hà', subject: 'Tiếng Anh' },
+      { name: 'Nguyễn Văn A', subject: 'Hóa học' },
+      { name: 'Trần Văn B', subject: 'Sinh học' },
+      { name: 'Phạm Thị C', subject: 'Lịch sử' },
+      { name: 'Bùi Minh D', subject: 'Địa lý' }
+    ];
+    const classes = ['12A1', '12A2', '11A1', '10A1'];
+    const days = ['Thứ 2', 'Thứ 3', 'Thứ 4', 'Thứ 5', 'Thứ 6'];
+    const slots = [];
+    let slotIdCounter = 1;
+
+    classes.forEach(classTarget => {
+      days.forEach(day => {
+        for (let period = 1; period <= 4; period++) {
+          const randomTeacher = teachersList[Math.floor(Math.random() * teachersList.length)];
+          slots.push({
+            id: 'TBT' + String(slotIdCounter++).padStart(3, '0'),
+            classTarget,
+            dayOfWeek: day,
+            period,
+            subject: randomTeacher.subject,
+            teacherName: randomTeacher.name,
+            room: `Phòng ${classTarget === '12A1' ? '402' : classTarget === '12A2' ? '403' : classTarget === '11A1' ? '301' : '201'}`
+          });
+        }
+      });
+    });
+
+    setTimetableSlots(slots);
+  };
+
+  const swapTimetableSlots = (slotIdA, slotIdB) => {
+    setTimetableSlots(prev => {
+      const slotA = prev.find(s => s.id === slotIdA);
+      const slotB = prev.find(s => s.id === slotIdB);
+      if (!slotA || !slotB) return prev;
+
+      return prev.map(s => {
+        if (s.id === slotIdA) {
+          return { ...s, dayOfWeek: slotB.dayOfWeek, period: slotB.period };
+        }
+        if (s.id === slotIdB) {
+          return { ...s, dayOfWeek: slotA.dayOfWeek, period: slotA.period };
+        }
+        return s;
+      });
+    });
+  };
+
   // ── Global Search ────────────────────────────────────────────────────────
   const globalSearch = (query) => {
     if (!query || query.trim().length < 2) return [];
@@ -1922,6 +2362,11 @@ export const AppProvider = ({ children }) => {
       approveBookReservation,
       collectBook,
       returnBook,
+      labSimulations, runPhysicsRLC, runChemistryReaction,
+      essaySubmissions, submitEssayForAiGrading, approveOrEditEssayGrade,
+      busRoutes, busScanLogs, simulateBusMove, parentRegisterBusRoute,
+      studentPortfolios, updatePortfolioAchievements, signPortfolioBgh, togglePortfolioPublic,
+      timetableSlots, teacherAvailability, generateSmartTimetable, swapTimetableSlots,
       notifications, markNotificationRead, markAllNotificationsRead, addNotification,
       directMessages, sendDirectMessage, markMessageRead,
       bulletins, addBulletin, confirmBulletinRead,

@@ -26,6 +26,11 @@ import CanteenManager from './components/CanteenManager';
 import WellnessHub from './components/WellnessHub';
 import StudyGroupHub from './components/StudyGroupHub';
 import LibraryHub from './components/LibraryHub';
+import WebLab from './components/WebLab';
+import EssayGrader from './components/EssayGrader';
+import BusTracker from './components/BusTracker';
+import PortfolioBuilder from './components/PortfolioBuilder';
+import TimetableGenerator from './components/TimetableGenerator';
 import { ShieldCheck, Mail, Phone, Trophy } from 'lucide-react';
 
 function App() {
@@ -50,18 +55,30 @@ function App() {
     if (activeTab === 'calendar') {
       return <SchoolCalendar />;
     }
-    if (activeTab === 'canteen') {
-      return <CanteenManager />;
+
+    // Student only tabs
+    if (currentRole === 'student') {
+      if (activeTab === 'canteen') return <CanteenManager />;
+      if (activeTab === 'wellness') return <WellnessHub />;
+      if (activeTab === 'study_group') return <StudyGroupHub />;
+      if (activeTab === 'library_hub') return <LibraryHub />;
+      if (activeTab === 'weblab') return <WebLab />;
     }
-    if (activeTab === 'wellness') {
-      return <WellnessHub />;
+
+    // Role-dependent premium pages
+    if (activeTab === 'essay_grader' && (currentRole === 'student' || currentRole === 'teacher' || currentRole === 'admin')) {
+      return <EssayGrader />;
     }
-    if (activeTab === 'study_group') {
-      return <StudyGroupHub />;
+    if (activeTab === 'bus_tracker' && (currentRole === 'student' || currentRole === 'parent' || currentRole === 'admin' || currentRole === 'teacher')) {
+      return <BusTracker />;
     }
-    if (activeTab === 'library_hub') {
-      return <LibraryHub />;
+    if (activeTab === 'portfolio' && (currentRole === 'student' || currentRole === 'admin')) {
+      return <PortfolioBuilder />;
     }
+    if (activeTab === 'timetable_generator' && (currentRole === 'admin' || currentRole === 'teacher')) {
+      return <TimetableGenerator />;
+    }
+
 
     // 1. BAN GIÁM HIỆU
     if (currentRole === 'admin') {

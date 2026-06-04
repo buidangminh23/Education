@@ -30,7 +30,9 @@ import {
   BookMarked,
   Trophy,
   Layers,
-  Clock
+  Clock,
+  FlaskConical,
+  Bus
 } from 'lucide-react';
 
 // Sub-nav items for student dashboard
@@ -106,10 +108,6 @@ export default function Sidebar({ activeTab, setActiveTab }) {
       case 'admin':
         return [
           { id: 'dashboard',           label: 'Tổng quan BGH',        icon: LayoutDashboard },
-          { id: 'canteen',             label: 'Căng tin Trường',      icon: UtensilsCrossed },
-          { id: 'wellness',            label: 'Hỗ trợ Tâm lý',        icon: Brain },
-          { id: 'study_group',         label: 'Học nhóm & Gia sư',    icon: Users },
-          { id: 'library_hub',         label: 'Thư viện số',         icon: Library },
           { id: 'students',            label: 'Quản lý Học sinh',     icon: Users },
           { id: 'teachers',            label: 'Quản lý Giáo viên',    icon: GraduationCap },
           { id: 'journal',             label: 'Sổ đầu bài',           icon: BookOpen },
@@ -117,16 +115,16 @@ export default function Sidebar({ activeTab, setActiveTab }) {
           { id: 'exam_repository',     label: 'Kho Đề Thi',           icon: BookMarked },
           { id: 'asset_manager',       label: 'Tài Sản Trường',       icon: Layers },
           { id: 'teacher_attendance',  label: 'Chấm Công Giáo Viên',  icon: Clock },
+          { id: 'bus_tracker',         label: 'Xe Bus Học Đường',     icon: Bus },
+          { id: 'portfolio',           label: 'Học Bạ Số & CV',       icon: GraduationCap },
+          { id: 'timetable_generator', label: 'Xếp TKB Thông Minh',   icon: Calendar },
           { id: 'calendar',            label: 'Thời khóa biểu',       icon: Calendar },
         ];
       case 'teacher':
         return [
           { id: 'dashboard',           label: 'Tổng quan lớp học',    icon: LayoutDashboard },
-          { id: 'canteen',             label: 'Thực đơn Căng tin',    icon: UtensilsCrossed },
-          { id: 'wellness',            label: 'Tư vấn Tâm lý',        icon: Brain },
-          { id: 'study_group',         label: 'Duyệt Gia sư & Nhóm',  icon: Users },
-          { id: 'library_hub',         label: 'Thư viện số',         icon: Library },
           { id: 'journal',             label: 'Ghi sổ đầu bài',      icon: BookOpen },
+          { id: 'essay_grader',        label: 'AI Chấm Bài Luận',     icon: FileText },
           { id: 'qas',                 label: 'Hỏi đáp phụ huynh',   icon: MessageSquare },
           { id: 'chat',                label: 'Nhắn Tin Phụ Huynh',   icon: MessageCircle },
           { id: 'meeting_booking',     label: 'Lịch Hẹn Gặp Mặt',    icon: CalendarCheck },
@@ -139,10 +137,14 @@ export default function Sidebar({ activeTab, setActiveTab }) {
         ];
       case 'student':
         return [
-          { id: 'canteen',             label: 'Căng tin & Ví của con', icon: UtensilsCrossed },
-          { id: 'wellness',            label: 'Hỗ trợ Tâm lý & AI',   icon: Brain },
-          { id: 'study_group',         label: 'Phòng tự học Pomodoro', icon: Users },
-          { id: 'library_hub',         label: 'Thư viện & E-books',   icon: Library },
+          { id: 'canteen',             label: 'Căng tin Trường',      icon: UtensilsCrossed },
+          { id: 'wellness',            label: 'Hỗ trợ Tâm lý',        icon: Brain },
+          { id: 'study_group',         label: 'Học nhóm & Gia sư',    icon: Users },
+          { id: 'library_hub',         label: 'Thư viện số',         icon: Library },
+          { id: 'weblab',              label: 'Phòng Thí Nghiệm ảo',  icon: FlaskConical },
+          { id: 'essay_grader',        label: 'AI Chấm Bài Luận',     icon: FileText },
+          { id: 'bus_tracker',         label: 'Xe Bus Học Đường',     icon: Bus },
+          { id: 'portfolio',           label: 'Học Bạ Số & CV',       icon: GraduationCap },
           { id: 'lectures',            label: 'Video bài giảng',      icon: FileText },
           { id: 'bulletin',            label: 'Bảng Tin Trường',      icon: Megaphone },
           { id: 'exam_repository',     label: 'Kho Đề Thi',           icon: BookMarked },
@@ -153,10 +155,7 @@ export default function Sidebar({ activeTab, setActiveTab }) {
       case 'parent':
         return [
           { id: 'dashboard',           label: 'Bảng điểm của con',    icon: Award },
-          { id: 'canteen',             label: 'Căng tin & Ví của con', icon: UtensilsCrossed },
-          { id: 'wellness',            label: 'Tâm lý & Stress của con',icon: Brain },
-          { id: 'study_group',         label: 'Học nhóm của con',     icon: Users },
-          { id: 'library_hub',         label: 'Thư viện trường',      icon: Library },
+          { id: 'bus_tracker',         label: 'Xe Bus Học Đường',     icon: Bus },
           { id: 'fees',                label: 'Đóng học phí',         icon: DollarSign },
           { id: 'qas',                 label: 'Hỏi đáp với GVCN',    icon: MessageSquare },
           { id: 'chat',                label: 'Nhắn Tin Giáo Viên',   icon: MessageCircle },
