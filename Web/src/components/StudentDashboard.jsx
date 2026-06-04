@@ -1502,11 +1502,24 @@ export default function StudentDashboard({ setActiveTab }) {
 
             {/* Academic profile progress */}
             <div className="glass-panel">
-              {/* Header row with year selector */}
-              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '12px', marginBottom: '20px' }}>
-                <h2 style={{ margin: 0, fontSize: '1.25rem' }}>Chi tiết kết quả học tập</h2>
-                {availableGradeYears && (
-                  <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+              {/* Header */}
+              <h2 style={{ margin: 0, fontSize: '1.25rem', marginBottom: availableGradeYears ? '16px' : '20px' }}>Chi tiết kết quả học tập</h2>
+
+              {/* Year selector – full-width prominent tab bar */}
+              {availableGradeYears && (
+                <div style={{ marginBottom: '20px' }}>
+                  <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.6px', marginBottom: '10px', fontWeight: 600 }}>
+                    📅 Chọn năm học để xem điểm
+                  </div>
+                  <div style={{
+                    display: 'flex',
+                    gap: '0',
+                    background: 'rgba(0,0,0,0.12)',
+                    borderRadius: '12px',
+                    padding: '4px',
+                    width: 'fit-content',
+                    border: '1px solid var(--border-card)'
+                  }}>
                     {availableGradeYears.map(yr => {
                       const isActive = (selectedGradeYear === yr.gradeLevel) || (selectedGradeYear === null && yr.gradeLevel === student.grade);
                       return (
@@ -1516,26 +1529,33 @@ export default function StudentDashboard({ setActiveTab }) {
                           aria-label={`Xem kết quả lớp ${yr.gradeLevel}`}
                           onClick={() => setSelectedGradeYear(yr.gradeLevel)}
                           style={{
-                            padding: '6px 16px',
-                            borderRadius: '20px',
-                            border: isActive ? '2px solid var(--accent-primary)' : '1px solid var(--border-card)',
-                            background: isActive ? 'var(--accent-primary)' : 'transparent',
+                            padding: '10px 22px',
+                            borderRadius: '8px',
+                            border: 'none',
+                            background: isActive
+                              ? 'linear-gradient(135deg, var(--accent-primary), #8b5cf6)'
+                              : 'transparent',
                             color: isActive ? '#fff' : 'var(--text-secondary)',
-                            fontSize: '0.82rem',
+                            fontSize: '0.9rem',
                             fontWeight: isActive ? 700 : 500,
                             cursor: 'pointer',
-                            transition: 'all 0.2s ease',
-                            whiteSpace: 'nowrap'
+                            transition: 'all 0.25s ease',
+                            boxShadow: isActive ? '0 2px 10px rgba(99,102,241,0.4)' : 'none',
+                            display: 'flex',
+                            flexDirection: 'column',
+                            alignItems: 'center',
+                            gap: '2px',
+                            minWidth: '90px'
                           }}
                         >
-                          Lớp {yr.gradeLevel}
-                          <span style={{ marginLeft: '6px', opacity: 0.75, fontSize: '0.75rem' }}>({yr.schoolYear})</span>
+                          <span style={{ fontWeight: isActive ? 800 : 600 }}>Lớp {yr.gradeLevel}</span>
+                          <span style={{ fontSize: '0.68rem', opacity: isActive ? 0.9 : 0.55, fontWeight: 400 }}>{yr.schoolYear}</span>
                         </button>
                       );
                     })}
                   </div>
-                )}
-              </div>
+                </div>
+              )}
 
               {/* Extra info for historical years */}
               {activeHistoryEntry && (
