@@ -125,6 +125,7 @@ export default function Sidebar({ activeTab, setActiveTab }) {
           { id: 'dashboard',           label: 'Tổng quan lớp học',    icon: LayoutDashboard },
           { id: 'journal',             label: 'Ghi sổ đầu bài',      icon: BookOpen },
           { id: 'essay_grader',        label: 'AI Chấm Bài Luận',     icon: FileText },
+          { id: 'portfolio',           label: 'Học Bạ Số & CV',       icon: GraduationCap },
           { id: 'qas',                 label: 'Hỏi đáp phụ huynh',   icon: MessageSquare },
           { id: 'chat',                label: 'Nhắn Tin Phụ Huynh',   icon: MessageCircle },
           { id: 'meeting_booking',     label: 'Lịch Hẹn Gặp Mặt',    icon: CalendarCheck },

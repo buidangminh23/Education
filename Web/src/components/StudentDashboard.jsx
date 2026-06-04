@@ -60,7 +60,7 @@ export default function StudentDashboard({ setActiveTab }) {
     addDeadline,
     toggleDeadlineDone,
     deleteDeadline,
-    submissions,
+    submissions: allSubmissions,
     submitAssignment,
     attendanceLogs,
     clubs,
@@ -134,6 +134,9 @@ export default function StudentDashboard({ setActiveTab }) {
   const [idCardFlipped, setIdCardFlipped] = useState(false);
   const [canteenItem, setCanteenItem] = useState('Nước ngọt');
   const [canteenPrice, setCanteenPrice] = useState(15000);
+
+  // Grade history year selector
+  const [selectedGradeYear, setSelectedGradeYear] = useState(null); // null = current year
 
   // Active student lookup (must be safe in hook initializers)
   const student = students ? (students.find(s => s.id === selectedStudentId) || students[0]) : null;
@@ -319,21 +322,35 @@ export default function StudentDashboard({ setActiveTab }) {
 
   // Calculate GPA and classification for Sem 1, Sem 2, and Whole Year
   const subjectsKeys = ['Math', 'Literature', 'Physics', 'English'];
+
+  // Grade history support: pick the correct year's data
+  const gradeHistory = student?.gradeHistory || [];
+  const availableGradeYears = gradeHistory.length > 0
+    ? gradeHistory.map(h => ({ gradeLevel: h.gradeLevel, class: h.class, schoolYear: h.schoolYear }))
+    : null;
   
-  const sem1GradesArray = student.gradesSem1 ? Object.values(student.gradesSem1) : [];
+  // The "active" history entry for the selected year (null → current year)
+  const activeHistoryEntry = selectedGradeYear
+    ? gradeHistory.find(h => h.gradeLevel === selectedGradeYear) || null
+    : null;
+
+  const activeSem1Grades = activeHistoryEntry ? activeHistoryEntry.sem1 : (student?.gradesSem1 || {});
+  const activeSem2Grades = activeHistoryEntry ? activeHistoryEntry.sem2 : (student?.grades || {});
+  
+  const sem1GradesArray = Object.values(activeSem1Grades);
   const sem1Gpa = sem1GradesArray.length > 0 
     ? (sem1GradesArray.reduce((a, b) => a + b, 0) / sem1GradesArray.length).toFixed(2)
     : '0.00';
 
-  const sem2GradesArray = student.grades ? Object.values(student.grades) : [];
+  const sem2GradesArray = Object.values(activeSem2Grades);
   const sem2Gpa = sem2GradesArray.length > 0
     ? (sem2GradesArray.reduce((a, b) => a + b, 0) / sem2GradesArray.length).toFixed(2)
     : '0.00';
 
   const wholeYearGrades = {};
   subjectsKeys.forEach(sub => {
-    const s1 = student.gradesSem1?.[sub] || 0;
-    const s2 = student.grades?.[sub] || 0;
+    const s1 = activeSem1Grades[sub] || 0;
+    const s2 = activeSem2Grades[sub] || 0;
     wholeYearGrades[sub] = parseFloat(((s1 + s2 * 2) / 3).toFixed(2));
   });
   const wholeYearGradesArray = Object.values(wholeYearGrades);
@@ -1421,7 +1438,9 @@ export default function StudentDashboard({ setActiveTab }) {
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '20px', marginBottom: '30px' }}>
             <div className="glass-panel stat-card">
               <div>
-                <span style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', fontWeight: 500 }}>GPA TỔNG KẾT CẢ NĂM</span>
+                <span style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', fontWeight: 500 }}>
+                  GPA {activeHistoryEntry ? `LỚP ${activeHistoryEntry.gradeLevel}` : 'TỔNG KẾT CẢ NĂM'}
+                </span>
                 <div style={{ fontSize: '2rem', marginTop: '6px', color: 'var(--accent-secondary)', fontWeight: 'bold' }}>{wholeYearGpa}/10</div>
               </div>
               <div className="stat-icon"><Award size={24} /></div>
@@ -1483,7 +1502,70 @@ export default function StudentDashboard({ setActiveTab }) {
 
             {/* Academic profile progress */}
             <div className="glass-panel">
-              <h2 style={{ marginBottom: '16px', fontSize: '1.25rem' }}>Chi tiết kết quả học tập</h2>
+              {/* Header row with year selector */}
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '12px', marginBottom: '20px' }}>
+                <h2 style={{ margin: 0, fontSize: '1.25rem' }}>Chi tiết kết quả học tập</h2>
+                {availableGradeYears && (
+                  <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+                    {availableGradeYears.map(yr => {
+                      const isActive = (selectedGradeYear === yr.gradeLevel) || (selectedGradeYear === null && yr.gradeLevel === student.grade);
+                      return (
+                        <button
+                          key={yr.gradeLevel}
+                          id={`grade-year-btn-${yr.gradeLevel}`}
+                          aria-label={`Xem kết quả lớp ${yr.gradeLevel}`}
+                          onClick={() => setSelectedGradeYear(yr.gradeLevel)}
+                          style={{
+                            padding: '6px 16px',
+                            borderRadius: '20px',
+                            border: isActive ? '2px solid var(--accent-primary)' : '1px solid var(--border-card)',
+                            background: isActive ? 'var(--accent-primary)' : 'transparent',
+                            color: isActive ? '#fff' : 'var(--text-secondary)',
+                            fontSize: '0.82rem',
+                            fontWeight: isActive ? 700 : 500,
+                            cursor: 'pointer',
+                            transition: 'all 0.2s ease',
+                            whiteSpace: 'nowrap'
+                          }}
+                        >
+                          Lớp {yr.gradeLevel}
+                          <span style={{ marginLeft: '6px', opacity: 0.75, fontSize: '0.75rem' }}>({yr.schoolYear})</span>
+                        </button>
+                      );
+                    })}
+                  </div>
+                )}
+              </div>
+
+              {/* Extra info for historical years */}
+              {activeHistoryEntry && (
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(160px, 1fr))', gap: '12px', marginBottom: '20px' }}>
+                  <div style={{ padding: '14px', background: 'rgba(16,185,129,0.06)', borderRadius: '10px', border: '1px solid rgba(16,185,129,0.2)', textAlign: 'center' }}>
+                    <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: '4px' }}>Lớp</div>
+                    <div style={{ fontWeight: 700, fontSize: '1.1rem', color: 'var(--accent-secondary)' }}>{activeHistoryEntry.class}</div>
+                  </div>
+                  <div style={{ padding: '14px', background: 'rgba(99,102,241,0.06)', borderRadius: '10px', border: '1px solid rgba(99,102,241,0.2)', textAlign: 'center' }}>
+                    <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: '4px' }}>Danh hiệu</div>
+                    <div style={{ fontWeight: 700, fontSize: '1rem', color: 'var(--accent-primary)' }}>{activeHistoryEntry.achievement}</div>
+                  </div>
+                  <div style={{ padding: '14px', background: 'rgba(245,158,11,0.06)', borderRadius: '10px', border: '1px solid rgba(245,158,11,0.2)', textAlign: 'center' }}>
+                    <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: '4px' }}>Xếp hạng</div>
+                    <div style={{ fontWeight: 700, fontSize: '1.1rem', color: '#f59e0b' }}>#{activeHistoryEntry.rank} trong lớp</div>
+                  </div>
+                  <div style={{ padding: '14px', background: 'rgba(239,68,68,0.05)', borderRadius: '10px', border: '1px solid rgba(239,68,68,0.15)', textAlign: 'center' }}>
+                    <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: '4px' }}>Vắng mặt</div>
+                    <div style={{ fontWeight: 700, fontSize: '1rem', color: activeHistoryEntry.attendance.absences > 2 ? '#ef4444' : 'var(--accent-secondary)' }}>
+                      {activeHistoryEntry.attendance.absences} buổi
+                      <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)', fontWeight: 400, marginLeft: '4px' }}>({activeHistoryEntry.attendance.absencesExcused} có phép)</span>
+                    </div>
+                  </div>
+                  <div style={{ padding: '14px', background: 'rgba(59,130,246,0.06)', borderRadius: '10px', border: '1px solid rgba(59,130,246,0.2)', textAlign: 'center' }}>
+                    <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: '4px' }}>Hạnh kiểm</div>
+                    <div style={{ fontWeight: 700, fontSize: '1rem', color: '#3b82f6' }}>{activeHistoryEntry.conduct.year}</div>
+                  </div>
+                </div>
+              )}
+
               <div style={{ overflowX: 'auto' }}>
                 <table className="premium-table">
                   <thead>
@@ -1496,8 +1578,8 @@ export default function StudentDashboard({ setActiveTab }) {
                   </thead>
                   <tbody>
                     {subjectsKeys.map(sub => {
-                      const score1 = student.gradesSem1?.[sub] ?? 0;
-                      const score2 = student.grades?.[sub] ?? 0;
+                      const score1 = activeSem1Grades[sub] ?? 0;
+                      const score2 = activeSem2Grades[sub] ?? 0;
                       const scoreAll = parseFloat(((score1 + score2 * 2) / 3).toFixed(2));
                       
                       const getSubjectName = (key) => {

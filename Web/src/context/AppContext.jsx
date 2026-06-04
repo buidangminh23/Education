@@ -54,6 +54,41 @@ const initialStudents = [
     parentPhone: '0987654321',
     gradesSem1: { Math: 8.2, Literature: 7.5, Physics: 8.8, English: 8.0 },
     grades: { Math: 8.5, Literature: 7.8, Physics: 9.0, English: 8.2 },
+    gradeHistory: [
+      {
+        gradeLevel: '10',
+        class: '10A1',
+        schoolYear: '2023–2024',
+        sem1: { Math: 7.8, Literature: 7.2, Physics: 7.5, English: 7.0 },
+        sem2: { Math: 8.0, Literature: 7.5, Physics: 7.8, English: 7.3 },
+        conduct: { sem1: 'Tốt', sem2: 'Tốt', year: 'Tốt' },
+        attendance: { totalSessions: 175, absences: 3, absencesExcused: 2 },
+        achievement: 'Học sinh Khá',
+        rank: 8
+      },
+      {
+        gradeLevel: '11',
+        class: '11A1',
+        schoolYear: '2024–2025',
+        sem1: { Math: 8.0, Literature: 7.3, Physics: 8.2, English: 7.8 },
+        sem2: { Math: 8.2, Literature: 7.6, Physics: 8.5, English: 8.0 },
+        conduct: { sem1: 'Tốt', sem2: 'Tốt', year: 'Tốt' },
+        attendance: { totalSessions: 175, absences: 2, absencesExcused: 2 },
+        achievement: 'Học sinh Giỏi',
+        rank: 5
+      },
+      {
+        gradeLevel: '12',
+        class: '12A1',
+        schoolYear: '2025–2026',
+        sem1: { Math: 8.2, Literature: 7.5, Physics: 8.8, English: 8.0 },
+        sem2: { Math: 8.5, Literature: 7.8, Physics: 9.0, English: 8.2 },
+        conduct: { sem1: 'Tốt', sem2: 'Tốt', year: 'Tốt' },
+        attendance: { totalSessions: 175, absences: 1, absencesExcused: 1 },
+        achievement: 'Học sinh Giỏi',
+        rank: 3
+      }
+    ],
     feeStatus: [
       { id: 'F01', name: 'Học phí tháng 6/2026', amount: 2500000, paid: false, deadline: '2026-06-15' },
       { id: 'F02', name: 'Tiền ăn bán trú tháng 6/2026', amount: 950000, paid: false, deadline: '2026-06-15' },

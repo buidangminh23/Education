@@ -5,11 +5,13 @@ import {
 } from 'lucide-react';
 
 export default function PortfolioBuilder() {
-  const { currentRole, selectedStudentId, students, studentPortfolios, updatePortfolioAchievements, signPortfolioBgh, togglePortfolioPublic } = useContext(AppContext);
+  const { currentRole, selectedStudentId, setSelectedStudentId, students, studentPortfolios, updatePortfolioAchievements, signPortfolioBgh, togglePortfolioPublic } = useContext(AppContext);
   
   const student = students?.find(s => s.id === selectedStudentId) || students?.[0];
   const isStudent = currentRole === 'student';
   const isAdmin = currentRole === 'admin';
+  const isTeacher = currentRole === 'teacher';
+  const canEdit = isAdmin || isTeacher;
 
   // Student editor achievements state
   const [newAchievement, setNewAchievement] = useState('');
@@ -56,16 +58,42 @@ export default function PortfolioBuilder() {
         </p>
       </div>
 
+      {/* Student Selector for Teachers and Admin */}
+      {(isTeacher || isAdmin) && (
+        <div style={{ 
+          background: 'rgba(79, 70, 229, 0.03)', 
+          border: '1px solid rgba(79, 70, 229, 0.08)',
+          borderRadius: '14px', 
+          padding: '16px', 
+          marginBottom: '24px',
+          display: 'flex',
+          alignItems: 'center',
+          gap: '12px'
+        }}>
+          <span style={{ fontSize: '0.85rem', fontWeight: 600, color: 'var(--text-secondary)' }}>Chọn học sinh quản lý:</span>
+          <select
+            value={selectedStudentId}
+            onChange={(e) => setSelectedStudentId(e.target.value)}
+            className="form-control"
+            style={{ padding: '6px 12px', width: 'auto', fontSize: '0.85rem', background: 'white', borderColor: '#cbd5e1', color: '#1e293b' }}
+          >
+            {students.map(s => (
+              <option key={s.id} value={s.id}>{s.name} ({s.class})</option>
+            ))}
+          </select>
+        </div>
+      )}
+
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 340px', gap: 24 }}>
         
-        {/* LEFT PANEL: Student builder OR Admin portfolio viewer */}
+        {/* LEFT PANEL: Student view OR Teacher/Admin portfolio editor */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
           
-          {/* STUDENT CV EDITOR FORM */}
+          {/* STUDENT CV VIEWER & VISIBILITY CONFIG */}
           {isStudent && (
             <div className="glass-panel" style={{ padding: 20, background: 'rgba(255,255,255,0.6)' }}>
               <h4 style={{ margin: '0 0 16px 0', fontSize: '1rem', color: 'var(--accent-primary)', display: 'flex', alignItems: 'center', gap: 6 }}>
-                <Plus size={18} /> Cập nhật hoạt động & Thành tích ngoại khóa
+                Cấu hình hiển thị hồ sơ
               </h4>
 
               {/* Toggle Public Switch */}
@@ -97,6 +125,58 @@ export default function PortfolioBuilder() {
                 </button>
               </div>
 
+              {/* Read-only notification box */}
+              <div style={{ 
+                background: 'rgba(79, 70, 229, 0.05)', 
+                border: '1px solid rgba(79, 70, 229, 0.15)', 
+                borderRadius: 12, 
+                padding: 14, 
+                marginBottom: 16,
+                display: 'flex',
+                gap: 10,
+                alignItems: 'flex-start'
+              }}>
+                <ShieldAlert size={18} color="var(--accent-primary)" style={{ flexShrink: 0, marginTop: 1 }} />
+                <div style={{ fontSize: '0.78rem', color: 'var(--text-secondary)', lineHeight: 1.4 }}>
+                  <strong>Quyền cập nhật thành tích:</strong> Chỉ có Giáo viên và Ban Giám Hiệu mới có thẩm quyền thêm/xóa hoạt động ngoại khóa hoặc giải thưởng trên học bạ điện tử của bạn. Vui lòng liên hệ Giáo viên chủ nhiệm để gửi yêu cầu cập nhật.
+                </div>
+              </div>
+
+              {/* Achievements read-only list */}
+              <h4 style={{ margin: '0 0 12px 0', fontSize: '0.9rem', color: 'var(--text-primary)' }}>
+                Hoạt động ngoại khóa đã ghi nhận:
+              </h4>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+                {portfolio.extracurricularAchievements.length === 0 ? (
+                  <div style={{ textAlign: 'center', padding: '20px 10px', color: 'var(--text-muted)', fontSize: '0.8rem' }}>
+                    Chưa ghi nhận thành tích nào.
+                  </div>
+                ) : (
+                  portfolio.extracurricularAchievements.map((item, idx) => (
+                    <div 
+                      key={idx} 
+                      style={{ 
+                        padding: '10px 14px', 
+                        background: '#fff', 
+                        border: '1px solid rgba(0,0,0,0.03)', 
+                        borderRadius: 10 
+                      }}
+                    >
+                      <span style={{ fontSize: '0.82rem', color: '#1e293b' }}>🏆 {item}</span>
+                    </div>
+                  ))
+                )}
+              </div>
+            </div>
+          )}
+
+          {/* TEACHER/ADMIN CV EDITOR FORM */}
+          {canEdit && (
+            <div className="glass-panel" style={{ padding: 20, background: 'rgba(255,255,255,0.6)' }}>
+              <h4 style={{ margin: '0 0 16px 0', fontSize: '1rem', color: 'var(--accent-primary)', display: 'flex', alignItems: 'center', gap: 6 }}>
+                <Plus size={18} /> Cập nhật hoạt động & Thành tích ngoại khóa
+              </h4>
+
               {/* Achievements add form */}
               <div style={{ display: 'flex', gap: 10, marginBottom: 14 }}>
                 <input 
@@ -120,7 +200,7 @@ export default function PortfolioBuilder() {
               <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
                 {portfolio.extracurricularAchievements.length === 0 ? (
                   <div style={{ textAlign: 'center', padding: '20px 10px', color: 'var(--text-muted)', fontSize: '0.8rem' }}>
-                    Chưa cập nhật thành tích nào.
+                    Chưa cập nhật thành tích nào cho em {student?.name}.
                   </div>
                 ) : (
                   portfolio.extracurricularAchievements.map((item, idx) => (

@@ -72,7 +72,7 @@ function App() {
     if (activeTab === 'bus_tracker' && (currentRole === 'student' || currentRole === 'parent' || currentRole === 'admin' || currentRole === 'teacher')) {
       return <BusTracker />;
     }
-    if (activeTab === 'portfolio' && (currentRole === 'student' || currentRole === 'admin')) {
+    if (activeTab === 'portfolio' && (currentRole === 'student' || currentRole === 'admin' || currentRole === 'teacher')) {
       return <PortfolioBuilder />;
     }
     if (activeTab === 'timetable_generator' && (currentRole === 'admin' || currentRole === 'teacher')) {
