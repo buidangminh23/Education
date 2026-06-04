@@ -2290,7 +2290,7 @@ export default function StudentDashboard({ setActiveTab }) {
                 <h3 style={{ margin: 0, fontSize: '1.1rem', fontWeight: 700, color: 'var(--text-primary)' }}>AI Tư Vấn Tâm Lý Học Đường</h3>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginTop: '2px' }}>
                   <div style={{ width: 8, height: 8, borderRadius: '50%', background: '#22c55e', animation: 'pulse 2s infinite' }} />
-                  <span style={{ fontSize: '0.78rem', color: '#22c55e', fontWeight: 600 }}>Đang trực tuyến • Phản hồi ngay lập tức</span>
+                  <span style={{ fontSize: '0.78rem', color: '#15803d', fontWeight: 600 }}>Đang trực tuyến • Phản hồi ngay lập tức</span>
                 </div>
               </div>
             </div>

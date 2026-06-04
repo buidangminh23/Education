@@ -13,13 +13,13 @@
   --text-muted: #5c6f84; /* Higher contrast slate */
   
   --accent-primary: #4f46e5; /* Indigo 600 */
-  --accent-secondary: #10b981; /* Emerald 500 */
+  --accent-secondary: #047857; /* Emerald 700 - Compliant with WCAG AA */
   --accent-danger: #b91c1c; /* Higher contrast red */
   --accent-warning: #f59e0b; /* Amber 500 */
   --accent-info: #0ea5e9; /* Sky 500 */
   
   --accent-primary-glow: rgba(79, 70, 229, 0.08);
-  --accent-secondary-glow: rgba(16, 185, 129, 0.08);
+  --accent-secondary-glow: rgba(4, 120, 87, 0.08);
   
   --glass-bg: rgba(255, 255, 255, 0.85);
   --glass-blur: blur(20px);

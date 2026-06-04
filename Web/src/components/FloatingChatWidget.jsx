@@ -297,6 +297,7 @@ export default function FloatingChatWidget() {
         >
           {/* ── Header ── */}
           <div style={{
+            backgroundColor: '#4f46e5', // Solid fallback background color for WCAG checker compatibility
             background: 'linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%)',
             padding: '14px 16px', display: 'flex', alignItems: 'center',
             gap: '10px', flexShrink: 0
@@ -312,12 +313,12 @@ export default function FloatingChatWidget() {
             </div>
 
             <div style={{ flex: 1, minWidth: 0 }}>
-              <div style={{ fontSize: '0.9rem', fontWeight: 700, color: 'white', lineHeight: 1.2 }}>
+              <div style={{ fontSize: '0.9rem', fontWeight: 700, color: '#ffffff', lineHeight: 1.2 }}>
                 Trợ Lý Học Tập AI
               </div>
               <div style={{ display: 'flex', alignItems: 'center', gap: '5px', marginTop: '2px' }}>
                 <div style={{ width: 6, height: 6, borderRadius: '50%', background: '#4ade80' }} />
-                <span style={{ fontSize: '0.7rem', color: 'rgba(255,255,255,0.8)' }}>
+                <span style={{ fontSize: '0.7rem', color: 'rgba(255, 255, 255, 0.95)' }}>
                   Đang trực tuyến • Chỉ dành cho học sinh
                 </span>
               </div>
@@ -326,12 +327,14 @@ export default function FloatingChatWidget() {
             {/* Controls */}
             <button
               onClick={() => setIsMinimized(m => !m)}
+              aria-label={isMinimized ? "Mở rộng cửa sổ chat" : "Thu nhỏ cửa sổ chat"}
               style={{ background: 'rgba(255,255,255,0.18)', border: 'none', borderRadius: '8px', padding: '5px 7px', cursor: 'pointer', color: 'white' }}
             >
               {isMinimized ? <ChevronDown size={16} /> : <Minus size={16} />}
             </button>
             <button
               onClick={() => setIsOpen(false)}
+              aria-label="Đóng cửa sổ chat"
               style={{ background: 'rgba(255,255,255,0.18)', border: 'none', borderRadius: '8px', padding: '5px 7px', cursor: 'pointer', color: 'white' }}
             >
               <X size={16} />
@@ -479,6 +482,7 @@ export default function FloatingChatWidget() {
                     <button
                       type="submit"
                       disabled={tutorIsTyping || !tutorInput.trim()}
+                      aria-label="Gửi câu hỏi cho gia sư"
                       style={{
                         width: '38px', height: '38px', borderRadius: '12px', border: 'none',
                         background: 'linear-gradient(135deg, #4f46e5, #7c3aed)', color: 'white',
@@ -639,6 +643,7 @@ export default function FloatingChatWidget() {
                       <button
                         type="submit"
                         disabled={counselorIsTyping || !counselorInput.trim()}
+                        aria-label="Gửi tin nhắn cho tư vấn viên"
                         style={{
                           width: '38px', height: '38px', borderRadius: '12px', border: 'none',
                           background: 'linear-gradient(135deg, #6366f1, #8b5cf6)', color: 'white',
