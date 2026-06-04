@@ -196,8 +196,7 @@ export default function Login() {
               height: '48px', 
               fontSize: '1rem', 
               fontWeight: 600, 
-              backgroundColor: '#4f46e5', // Solid background for WCAG contrast checker
-              background: 'linear-gradient(135deg, #6366f1, #4f46e5)',
+              background: '#4f46e5', // Solid background to guarantee WCAG compliance
               boxShadow: '0 10px 20px -8px rgba(99, 102, 241, 0.4)',
               gap: '6px'
             }}

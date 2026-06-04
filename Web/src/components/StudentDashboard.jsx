@@ -962,7 +962,7 @@ export default function StudentDashboard({ setActiveTab }) {
                                   padding: '10px', 
                                   fontSize: '0.85rem', 
                                   fontWeight: 600,
-                                  background: 'linear-gradient(135deg, #10b981, #059669)',
+                                  background: 'var(--accent-secondary)', // Solid dark green
                                   border: 'none'
                                 }}
                               >
@@ -1076,7 +1076,7 @@ export default function StudentDashboard({ setActiveTab }) {
                   <button
                     onClick={handleFinishExam}
                     className="btn btn-primary"
-                    style={{ background: '#10b981', padding: '10px 24px', fontWeight: 700, borderRadius: '12px', border: 'none' }}
+                    style={{ background: 'var(--accent-secondary)', padding: '10px 24px', fontWeight: 700, borderRadius: '12px', border: 'none' }}
                   >
                     Nộp bài
                   </button>
