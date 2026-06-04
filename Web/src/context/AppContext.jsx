@@ -542,6 +542,29 @@ const initialTeacherAvailability = [
 ];
 
 export const AppProvider = ({ children }) => {
+  // ── Database Version Auto-Reset ───────────────────────────────────────────
+  // We use this version string to force clear old localStorage cached mock data
+  // so that structural changes (like gradeHistory on HS001) are loaded.
+  const CURRENT_DB_VERSION = 'v1.4';
+  const savedVersion = localStorage.getItem('edu_db_version');
+  if (savedVersion !== CURRENT_DB_VERSION) {
+    const keysToClear = [
+      'students', 'teachers', 'announcements', 'journalEntries', 'parentQAs', 
+      'tutorChat', 'leaveRequests', 'teacherLeaveRequests', 'lessonPlans', 
+      'wellnessLogs', 'wellnessAppointments', 'studyRooms', 'peerTutors', 
+      'tutorRequests', 'libraryBooks', 'bookReservations', 'conductLogs', 
+      'teacherEvaluations', 'labSimulations', 'essaySubmissions', 'busRoutes', 
+      'busScanLogs', 'studentPortfolios', 'timetableSlots', 'assignments', 
+      'deadlines', 'submissions', 'attendanceLogs', 'clubs', 'clubApplications', 
+      'learningResources', 'flashcards', 'careerTestScores', 'cafeteriaRegistrations', 
+      'cafeteriaFeedback', 'studentWallets', 'mockExamHistory', 'customExams',
+      'notifications', 'directMessages', 'bulletins', 'meetingBookings',
+      'communityExams', 'schoolAssets', 'teacherAttendance'
+    ];
+    keysToClear.forEach(key => localStorage.removeItem(key));
+    localStorage.setItem('edu_db_version', CURRENT_DB_VERSION);
+  }
+
   const [theme] = useState('light');
   
   const [userSession, setUserSession] = useState(() => {
