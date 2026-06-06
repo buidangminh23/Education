@@ -1,314 +1,242 @@
-import { useState, useContext } from 'react';
+import { useContext } from 'react';
 import { AppContext } from '../../context/AppContext';
-import { Award, UserCheck, BookOpen, HelpCircle, Calendar, Sparkles, ArrowRight } from 'lucide-react';
+import {
+  Plus, Star, Trophy, CheckCircle, Heart, Calendar,
+  ChevronRight, BookOpen, BarChart3, ClipboardList, Clock, Bell, TrendingUp
+} from 'lucide-react';
 
 const SUBJECT_KEYS = ['Math', 'Literature', 'Physics', 'English'];
-
-const getClassification = (gpaScore) => {
-  const val = parseFloat(gpaScore);
-  if (val >= 8.0) return 'Giỏi';
-  if (val >= 6.5) return 'Khá';
-  if (val >= 5.0) return 'Trung bình';
-  return 'Yếu';
+const SUBJECT_META = {
+  Math: { name: 'Toán', color: 'blue' },
+  Literature: { name: 'Ngữ văn', color: 'pink' },
+  Physics: { name: 'Vật lý', color: 'violet' },
+  English: { name: 'Tiếng Anh', color: 'mint' },
 };
 
-const getSubjectName = (key) => {
-  if (key === 'Math') return 'Toán học';
-  if (key === 'Literature') return 'Ngữ văn';
-  if (key === 'Physics') return 'Vật lý';
-  if (key === 'English') return 'Tiếng Anh';
-  return key;
-};
+const PERIODS = [
+  { time: '07:00', subject: 'Chào cờ', room: 'Sân trường', color: 'amber' },
+  { time: '07:50', subject: 'Toán', room: 'P.201 · Cô Hoa', color: 'blue' },
+  { time: '08:40', subject: 'Tiếng Anh', room: 'P.305 · Thầy Phúc', color: 'mint' },
+  { time: '09:45', subject: 'Vật lý', room: 'P.Lab 2 · Thầy Dũng', color: 'violet' },
+  { time: '10:35', subject: 'Ngữ văn', room: 'P.201 · Cô Lan', color: 'pink' },
+  { time: '14:00', subject: 'Thể dục', room: 'Nhà thi đấu · Thầy Hải', color: 'lime' },
+];
+
+const BADGES = [
+  { name: 'Chuyên cần', ico: '🎯', color: 'blue', got: true },
+  { name: 'Top 3 lớp', ico: '🏆', color: 'amber', got: true },
+  { name: 'Mọt sách', ico: '📚', color: 'violet', got: true },
+  { name: 'Streak 7', ico: '🔥', color: 'orange', got: true },
+  { name: 'Siêu Toán', ico: '🧮', color: 'mint', got: false },
+  { name: 'Nhà vô địch', ico: '👑', color: 'pink', got: false },
+];
+
+function bulletinTag(b) {
+  if (b.priority === 'urgent' || b.priority === 'high') return { label: 'Khẩn', color: 'coral' };
+  if (b.type === 'event' || b.type === 'activity') return { label: 'Hoạt động', color: 'mint' };
+  if (b.type === 'finance') return { label: 'Học phí', color: 'amber' };
+  if (b.type === 'academic') return { label: 'Học vụ', color: 'blue' };
+  return { label: 'Thông báo', color: 'violet' };
+}
+const dmy = (s) => { if (!s) return ''; const d = new Date(s); return `${d.getDate()}/${d.getMonth() + 1}`; };
+
+function Stat({ icon: Icon, color, val, label, sub, trend, delay }) {
+  return (
+    <div className={`card stat animate ${delay}`}>
+      <div className="stat-top">
+        <div className={`chip-ico bg-${color} t-${color}`}><Icon size={22} /></div>
+        {trend != null && (
+          <span className="stat-trend" style={{ color: trend >= 0 ? 'var(--lime)' : 'var(--coral)' }}>
+            <TrendingUp size={14} style={{ transform: trend >= 0 ? 'none' : 'scaleY(-1)' }} /> {trend > 0 ? `+${trend}` : trend}
+          </span>
+        )}
+      </div>
+      <div>
+        <div className="stat-val">{val}</div>
+        <div className="stat-label" style={{ marginTop: 4 }}>{label}</div>
+      </div>
+      <div className="muted" style={{ fontSize: '0.8rem' }}>{sub}</div>
+    </div>
+  );
+}
+
+function SectionCard({ title, icon: Icon, action, delay, children }) {
+  return (
+    <div className={`card animate ${delay}`}>
+      <div className="card-head">
+        <div className="card-title"><Icon size={19} className="t-accent" /> {title}</div>
+        {action}
+      </div>
+      {children}
+    </div>
+  );
+}
+
+function Pill({ color, dot, children }) {
+  return <span className={`pill bg-${color} t-${color}`}>{dot && <span style={{ width: 6, height: 6, borderRadius: 99, background: 'currentColor' }} />}{children}</span>;
+}
+
+function Bar({ value, color }) {
+  return <div className="bar"><i style={{ width: `${Math.min(100, value * 10)}%`, background: `var(--${color})` }} /></div>;
+}
+
+function formatDue(dateStr) {
+  if (!dateStr) return '';
+  const today = new Date(); today.setHours(0, 0, 0, 0);
+  const d = new Date(dateStr); d.setHours(0, 0, 0, 0);
+  const diff = Math.round((d - today) / 86400000);
+  if (diff === 0) return { label: 'Hôm nay, 23:59', urgent: true };
+  if (diff === 1) return { label: 'Ngày mai', urgent: false };
+  if (diff < 0) return { label: 'Quá hạn', urgent: true };
+  const wd = ['CN', 'Thứ 2', 'Thứ 3', 'Thứ 4', 'Thứ 5', 'Thứ 6', 'Thứ 7'][d.getDay()];
+  return { label: `${wd}, ${d.getDate()}/${d.getMonth() + 1}`, urgent: false };
+}
 
 export default function OverviewTab({ student, setActiveTab }) {
-  const { tutorChat, attendanceLogs } = useContext(AppContext);
-  const [selectedGradeYear, setSelectedGradeYear] = useState(null);
+  const { attendanceLogs, conductLogs, deadlines, bulletins } = useContext(AppContext);
 
-  const gradeHistory = student?.gradeHistory || [];
-  const availableGradeYears = gradeHistory.length > 0
-    ? gradeHistory.map(h => ({ gradeLevel: h.gradeLevel, class: h.class, schoolYear: h.schoolYear }))
-    : null;
+  const grades = student?.grades || {};
+  const gradeVals = SUBJECT_KEYS.map(k => grades[k]).filter(v => typeof v === 'number');
+  const gpa = gradeVals.length ? (gradeVals.reduce((a, b) => a + b, 0) / gradeVals.length).toFixed(1) : '—';
 
-  const activeHistoryEntry = selectedGradeYear
-    ? gradeHistory.find(h => h.gradeLevel === selectedGradeYear) || null
-    : null;
-
-  const activeSem1Grades = activeHistoryEntry ? activeHistoryEntry.sem1 : (student?.gradesSem1 || {});
-  const activeSem2Grades = activeHistoryEntry ? activeHistoryEntry.sem2 : (student?.grades || {});
-
-  const sem1GradesArray = Object.values(activeSem1Grades);
-  const sem1Gpa = sem1GradesArray.length > 0
-    ? (sem1GradesArray.reduce((a, b) => a + b, 0) / sem1GradesArray.length).toFixed(2)
-    : '0.00';
-
-  const sem2GradesArray = Object.values(activeSem2Grades);
-  const sem2Gpa = sem2GradesArray.length > 0
-    ? (sem2GradesArray.reduce((a, b) => a + b, 0) / sem2GradesArray.length).toFixed(2)
-    : '0.00';
-
-  const wholeYearGrades = {};
-  SUBJECT_KEYS.forEach(sub => {
-    const s1 = activeSem1Grades[sub] || 0;
-    const s2 = activeSem2Grades[sub] || 0;
-    wholeYearGrades[sub] = parseFloat(((s1 + s2 * 2) / 3).toFixed(2));
-  });
-  const wholeYearGradesArray = Object.values(wholeYearGrades);
-  const wholeYearGpa = wholeYearGradesArray.length > 0
-    ? (wholeYearGradesArray.reduce((a, b) => a + b, 0) / wholeYearGradesArray.length).toFixed(2)
-    : '0.00';
-
-  const tutorMsgCount = tutorChat.filter(m => m.sender === 'user').length;
   const myAttendance = attendanceLogs ? attendanceLogs.filter(l => l.studentId === student.id) : [];
+  const attendancePct = myAttendance.length
+    ? Math.round((myAttendance.filter(l => l.status !== 'absent').length / myAttendance.length) * 100)
+    : 98;
+
+  const studentConductLogs = conductLogs ? conductLogs.filter(l => l.studentId === student.id) : [];
+  const conductScore = 100 + studentConductLogs.reduce((acc, c) => acc + c.points, 0);
+  const conductGrade = conductScore >= 90 ? 'Tốt' : conductScore >= 70 ? 'Khá' : conductScore >= 50 ? 'TB' : 'Yếu';
+
+  const myDeadlines = (deadlines || [])
+    .filter(d => !d.done && (d.classTarget === student.class || d.classTarget === 'personal'))
+    .slice(0, 4);
+
+  const news = (bulletins || [])
+    .filter(b => !b.targetRoles || b.targetRoles.includes('student') || b.targetRoles.includes('all'))
+    .slice(0, 2);
+  const firstName = (student?.name || 'bạn').trim().split(' ').pop();
 
   return (
-    <div className="animate-fade">
-      {/* Stats Cards */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '20px', marginBottom: '30px' }}>
-        <div className="glass-panel stat-card">
-          <div>
-            <span style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', fontWeight: 500 }}>
-              GPA {activeHistoryEntry ? `LỚP ${activeHistoryEntry.gradeLevel}` : 'TỔNG KẾT CẢ NĂM'}
-            </span>
-            <div style={{ fontSize: '2rem', marginTop: '6px', color: 'var(--accent-secondary)', fontWeight: 'bold' }}>{wholeYearGpa}/10</div>
-          </div>
-          <div className="stat-icon"><Award size={24} /></div>
+    <div>
+      <div className="page-head">
+        <div>
+          <h1 className="page-title">Chào {firstName}, sẵn sàng học chưa? 🚀</h1>
+          <p className="page-sub">
+            Hôm nay bạn có <b style={{ color: 'var(--accent)' }}>{myDeadlines.length} bài tập</b> đến hạn và <b style={{ color: 'var(--accent)' }}>{PERIODS.length} tiết học</b>.
+          </p>
         </div>
-
-        <div className="glass-panel stat-card">
-          <div>
-            <span style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', fontWeight: 500 }}>TỶ LỆ CHUYÊN CẦN THÁNG 6</span>
-            <div style={{ fontSize: '2rem', marginTop: '6px', fontWeight: 'bold' }}>
-              {myAttendance.length > 0 ? `${Math.round((myAttendance.filter(l => l.status !== 'absent').length / 3) * 100)}%` : '100%'}
-            </div>
-          </div>
-          <div className="stat-icon" style={{ color: 'var(--accent-secondary)', background: 'var(--accent-secondary-glow)' }}><UserCheck size={24} /></div>
-        </div>
-
-        <div className="glass-panel stat-card">
-          <div>
-            <span style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', fontWeight: 500 }}>BÀI GIẢNG ĐÃ XEM</span>
-            <div style={{ fontSize: '2rem', marginTop: '6px', fontWeight: 'bold' }}>3 video</div>
-          </div>
-          <div className="stat-icon" style={{ color: 'var(--accent-info)', background: 'var(--accent-primary-glow)' }}><BookOpen size={24} /></div>
-        </div>
-
-        <div className="glass-panel stat-card">
-          <div>
-            <span style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', fontWeight: 500 }}>TRAO ĐỔI VỚI GIA SƯ AI</span>
-            <div style={{ fontSize: '2rem', marginTop: '6px', fontWeight: 'bold' }}>{tutorMsgCount} câu hỏi</div>
-          </div>
-          <div className="stat-icon" style={{ color: 'var(--accent-warning)', background: 'rgba(245, 158, 11, 0.1)' }}><HelpCircle size={24} /></div>
-        </div>
+        <button className="btn btn-primary"><Plus size={18} /> Ghi chú mới</button>
       </div>
 
-      <div style={{ display: 'grid', gridTemplateColumns: '1.2fr 1fr', gap: '20px', marginBottom: '30px' }}>
-        {/* Weekly Timetable preview */}
-        <div className="glass-panel">
-          <h2 style={{ marginBottom: '16px', display: 'flex', alignItems: 'center', gap: '8px', fontSize: '1.25rem' }}>
-            <Calendar size={18} color="var(--accent-primary)" />
-            <span>Thời khóa biểu hôm nay</span>
-          </h2>
-
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-            {[
-              { time: '07:30 - 08:15', sub: 'Toán học', room: 'Phòng 402', t: 'Thầy Triết' },
-              { time: '08:25 - 09:10', sub: 'Ngữ văn', room: 'Phòng 402', t: 'Cô Vân' },
-              { time: '09:20 - 10:05', sub: 'Vật lý', room: 'Phòng thực hành Lý', t: 'Thầy Duy' },
-              { time: '10:20 - 11:05', sub: 'Tiếng Anh', room: 'Phòng 402', t: 'Cô Hà' }
-            ].map((slot, idx) => (
-              <div key={idx} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '14px', background: 'rgba(255,255,255,0.01)', border: '1px solid var(--border-card)', borderRadius: '8px' }}>
-                <span style={{ fontSize: '0.85rem', color: 'var(--text-muted)', fontWeight: 500 }}>{slot.time}</span>
-                <div style={{ flex: 1, paddingLeft: '24px' }}>
-                  <div style={{ fontWeight: 600 }}>{slot.sub}</div>
-                  <div style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>{slot.t}</div>
-                </div>
-                <span className="badge badge-info">{slot.room}</span>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        {/* Academic profile progress */}
-        <div className="glass-panel">
-          <h2 style={{ margin: 0, fontSize: '1.25rem', marginBottom: availableGradeYears ? '16px' : '20px' }}>Chi tiết kết quả học tập</h2>
-
-          {/* Year selector – full-width prominent tab bar */}
-          {availableGradeYears && (
-            <div style={{ marginBottom: '20px' }}>
-              <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.6px', marginBottom: '10px', fontWeight: 600 }}>
-                📅 Chọn năm học để xem điểm
-              </div>
-              <div style={{
-                display: 'flex',
-                gap: '0',
-                background: 'rgba(0,0,0,0.12)',
-                borderRadius: '12px',
-                padding: '4px',
-                width: 'fit-content',
-                border: '1px solid var(--border-card)'
-              }}>
-                {availableGradeYears.map(yr => {
-                  const isActive = (selectedGradeYear === yr.gradeLevel) || (selectedGradeYear === null && yr.gradeLevel === student.grade);
-                  return (
-                    <button
-                      key={yr.gradeLevel}
-                      id={`grade-year-btn-${yr.gradeLevel}`}
-                      aria-label={`Xem kết quả lớp ${yr.gradeLevel}`}
-                      onClick={() => setSelectedGradeYear(yr.gradeLevel)}
-                      style={{
-                        padding: '10px 22px',
-                        borderRadius: '8px',
-                        border: 'none',
-                        background: isActive
-                          ? 'linear-gradient(135deg, var(--accent-primary), #8b5cf6)'
-                          : 'transparent',
-                        color: isActive ? '#fff' : 'var(--text-secondary)',
-                        fontSize: '0.9rem',
-                        fontWeight: isActive ? 700 : 500,
-                        cursor: 'pointer',
-                        transition: 'all 0.25s ease',
-                        boxShadow: isActive ? '0 2px 10px rgba(99,102,241,0.4)' : 'none',
-                        display: 'flex',
-                        flexDirection: 'column',
-                        alignItems: 'center',
-                        gap: '2px',
-                        minWidth: '90px'
-                      }}
-                    >
-                      <span style={{ fontWeight: isActive ? 800 : 600 }}>Lớp {yr.gradeLevel}</span>
-                      <span style={{ fontSize: '0.68rem', opacity: isActive ? 0.9 : 0.55, fontWeight: 400 }}>{yr.schoolYear}</span>
-                    </button>
-                  );
-                })}
-              </div>
-            </div>
-          )}
-
-          {/* Extra info for historical years */}
-          {activeHistoryEntry && (
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(160px, 1fr))', gap: '12px', marginBottom: '20px' }}>
-              <div style={{ padding: '14px', background: 'rgba(16,185,129,0.06)', borderRadius: '10px', border: '1px solid rgba(16,185,129,0.2)', textAlign: 'center' }}>
-                <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: '4px' }}>Lớp</div>
-                <div style={{ fontWeight: 700, fontSize: '1.1rem', color: 'var(--accent-secondary)' }}>{activeHistoryEntry.class}</div>
-              </div>
-              <div style={{ padding: '14px', background: 'rgba(99,102,241,0.06)', borderRadius: '10px', border: '1px solid rgba(99,102,241,0.2)', textAlign: 'center' }}>
-                <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: '4px' }}>Danh hiệu</div>
-                <div style={{ fontWeight: 700, fontSize: '1rem', color: 'var(--accent-primary)' }}>{activeHistoryEntry.achievement}</div>
-              </div>
-              <div style={{ padding: '14px', background: 'rgba(245,158,11,0.06)', borderRadius: '10px', border: '1px solid rgba(245,158,11,0.2)', textAlign: 'center' }}>
-                <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: '4px' }}>Xếp hạng</div>
-                <div style={{ fontWeight: 700, fontSize: '1.1rem', color: '#f59e0b' }}>#{activeHistoryEntry.rank} trong lớp</div>
-              </div>
-              <div style={{ padding: '14px', background: 'rgba(239,68,68,0.05)', borderRadius: '10px', border: '1px solid rgba(239,68,68,0.15)', textAlign: 'center' }}>
-                <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: '4px' }}>Vắng mặt</div>
-                <div style={{ fontWeight: 700, fontSize: '1rem', color: activeHistoryEntry.attendance.absences > 2 ? '#ef4444' : 'var(--accent-secondary)' }}>
-                  {activeHistoryEntry.attendance.absences} buổi
-                  <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)', fontWeight: 400, marginLeft: '4px' }}>({activeHistoryEntry.attendance.absencesExcused} có phép)</span>
-                </div>
-              </div>
-              <div style={{ padding: '14px', background: 'rgba(59,130,246,0.06)', borderRadius: '10px', border: '1px solid rgba(59,130,246,0.2)', textAlign: 'center' }}>
-                <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: '4px' }}>Hạnh kiểm</div>
-                <div style={{ fontWeight: 700, fontSize: '1rem', color: '#3b82f6' }}>{activeHistoryEntry.conduct.year}</div>
-              </div>
-            </div>
-          )}
-
-          <div style={{ overflowX: 'auto' }}>
-            <table className="premium-table">
-              <thead>
-                <tr>
-                  <th>Môn học</th>
-                  <th style={{ textAlign: 'center' }}>Học kì I</th>
-                  <th style={{ textAlign: 'center' }}>Học kì II</th>
-                  <th style={{ textAlign: 'center' }}>Cả năm</th>
-                </tr>
-              </thead>
-              <tbody>
-                {SUBJECT_KEYS.map(sub => {
-                  const score1 = activeSem1Grades[sub] ?? 0;
-                  const score2 = activeSem2Grades[sub] ?? 0;
-                  const scoreAll = parseFloat(((score1 + score2 * 2) / 3).toFixed(2));
-
-                  return (
-                    <tr key={sub}>
-                      <td style={{ fontWeight: 600 }}>{getSubjectName(sub)}</td>
-                      <td style={{ textAlign: 'center', fontWeight: 600 }}>{score1.toFixed(1)}</td>
-                      <td style={{ textAlign: 'center', fontWeight: 600, color: 'var(--accent-primary)' }}>{score2.toFixed(1)}</td>
-                      <td style={{ textAlign: 'center', fontWeight: 700, color: 'var(--accent-secondary)' }}>{scoreAll.toFixed(1)}</td>
-                    </tr>
-                  );
-                })}
-                {/* GPA Row */}
-                <tr style={{ borderTop: '2px solid var(--border-color)', background: 'rgba(99, 102, 241, 0.05)' }}>
-                  <td style={{ fontWeight: 700 }}>Điểm trung bình (GPA)</td>
-                  <td style={{ textAlign: 'center', fontWeight: 700 }}>{sem1Gpa}</td>
-                  <td style={{ textAlign: 'center', fontWeight: 700, color: 'var(--accent-primary)' }}>{sem2Gpa}</td>
-                  <td style={{ textAlign: 'center', fontWeight: 800, color: 'var(--accent-secondary)', fontSize: '1.05rem' }}>{wholeYearGpa}</td>
-                </tr>
-                {/* Classification Row */}
-                <tr style={{ background: 'rgba(16, 185, 129, 0.05)' }}>
-                  <td style={{ fontWeight: 700 }}>Xếp loại học lực</td>
-                  <td style={{ textAlign: 'center', fontWeight: 700 }}>
-                    <span className={`badge ${parseFloat(sem1Gpa) >= 8.0 ? 'badge-success' : parseFloat(sem1Gpa) >= 6.5 ? 'badge-warning' : 'badge-danger'}`}>
-                      {getClassification(sem1Gpa)}
-                    </span>
-                  </td>
-                  <td style={{ textAlign: 'center', fontWeight: 700 }}>
-                    <span className={`badge ${parseFloat(sem2Gpa) >= 8.0 ? 'badge-success' : parseFloat(sem2Gpa) >= 6.5 ? 'badge-warning' : 'badge-danger'}`}>
-                      {getClassification(sem2Gpa)}
-                    </span>
-                  </td>
-                  <td style={{ textAlign: 'center', fontWeight: 700 }}>
-                    <span className={`badge ${parseFloat(wholeYearGpa) >= 8.0 ? 'badge-success' : parseFloat(wholeYearGpa) >= 6.5 ? 'badge-warning' : 'badge-danger'}`} style={{ fontSize: '0.85rem', padding: '6px 12px' }}>
-                      {getClassification(wholeYearGpa)}
-                    </span>
-                  </td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-        </div>
+      {/* Stats */}
+      <div className="ds-grid cols-4" style={{ marginBottom: 20 }}>
+        <Stat icon={Star} color="blue" val={gpa} label="Điểm trung bình" sub="Học kỳ này" trend={0.3} delay="d1" />
+        <Stat icon={Trophy} color="amber" val="#3" label="Hạng trong lớp" sub="trên 42 bạn" trend={1} delay="d2" />
+        <Stat icon={CheckCircle} color="mint" val={`${attendancePct}%`} label="Chuyên cần" sub="Tuyệt vời!" delay="d3" />
+        <Stat icon={Heart} color="pink" val={conductGrade} label="Hạnh kiểm" sub="Học kỳ II" delay="d4" />
       </div>
 
-      {/* Quick shortcuts */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: '20px' }}>
-        <div className="glass-panel glass-panel-hover" style={{ cursor: 'pointer' }} onClick={() => setActiveTab('tutor')}>
-          <h3 style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px', fontSize: '1rem', fontWeight: 700 }}>
-            <Sparkles size={16} color="var(--accent-primary)" />
-            <span>Gia sư AI 24/7</span>
-          </h3>
-          <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', marginBottom: '12px' }}>
-            Hỏi đáp giải bài tập Toán, Lý, Hóa, Văn, Anh trực tuyến bất cứ lúc nào.
-          </p>
-          <span style={{ fontSize: '0.85rem', color: 'var(--accent-primary)', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '4px' }}>
-            Vào phòng gia sư <ArrowRight size={14} />
-          </span>
+      <div className="ds-grid" style={{ gridTemplateColumns: '1.6fr 1fr' }}>
+        {/* Left */}
+        <div className="col" style={{ gap: 20 }}>
+          {/* Timetable */}
+          <SectionCard title="Lịch học hôm nay" icon={Calendar} delay="d3"
+            action={<button className="btn btn-soft btn-sm" onClick={() => setActiveTab && setActiveTab('calendar')}>Cả tuần <ChevronRight size={15} /></button>}>
+            <div className="col" style={{ gap: 9 }}>
+              {PERIODS.map((p, i) => (
+                <div className="tt-period" key={i} style={{ borderLeftColor: `var(--${p.color})` }}>
+                  <div style={{ minWidth: 52 }}><span style={{ fontWeight: 800, fontSize: '0.92rem' }}>{p.time}</span></div>
+                  <div className={`chip-ico bg-${p.color} t-${p.color}`} style={{ width: 38, height: 38 }}><BookOpen size={18} /></div>
+                  <div style={{ flex: 1 }}>
+                    <div style={{ fontWeight: 700 }}>{p.subject}</div>
+                    <div className="muted" style={{ fontSize: '0.8rem' }}>{p.room}</div>
+                  </div>
+                  {i === 1 && <Pill color="blue" dot>Sắp tới</Pill>}
+                </div>
+              ))}
+            </div>
+          </SectionCard>
+
+          {/* Subject grades */}
+          <SectionCard title="Điểm các môn" icon={BarChart3} delay="d4"
+            action={<button className="btn btn-soft btn-sm" onClick={() => setActiveTab && setActiveTab('dashboard')}>Chi tiết</button>}>
+            <div className="ds-grid cols-2" style={{ gap: 14 }}>
+              {SUBJECT_KEYS.filter(k => typeof grades[k] === 'number').map((k) => {
+                const m = SUBJECT_META[k];
+                return (
+                  <div key={k} className="flex items-center gap-12" style={{ padding: '4px 2px' }}>
+                    <div className={`chip-ico bg-${m.color} t-${m.color}`} style={{ width: 40, height: 40 }}><BookOpen size={18} /></div>
+                    <div style={{ flex: 1 }}>
+                      <div className="flex between" style={{ marginBottom: 5 }}>
+                        <span style={{ fontWeight: 700, fontSize: '0.88rem' }}>{m.name}</span>
+                        <span className={`t-${m.color}`} style={{ fontWeight: 800, fontSize: '0.88rem' }}>{grades[k].toFixed(1)}</span>
+                      </div>
+                      <Bar value={grades[k]} color={m.color} />
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </SectionCard>
         </div>
 
-        <div className="glass-panel glass-panel-hover" style={{ cursor: 'pointer' }} onClick={() => setActiveTab('lectures')}>
-          <h3 style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px', fontSize: '1rem', fontWeight: 700 }}>
-            <BookOpen size={16} color="var(--accent-secondary)" />
-            <span>Thư viện bài giảng số</span>
-          </h3>
-          <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', marginBottom: '12px' }}>
-            Hệ thống video giảng dạy trực quan, ôn luyện chuyên đề thi THPT Quốc gia.
-          </p>
-          <span style={{ fontSize: '0.85rem', color: 'var(--accent-secondary)', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '4px' }}>
-            Mở thư viện video <ArrowRight size={14} />
-          </span>
-        </div>
+        {/* Right */}
+        <div className="col" style={{ gap: 20 }}>
+          {/* Assignments */}
+          <SectionCard title="Bài tập sắp đến hạn" icon={ClipboardList} delay="d3">
+            <div className="col" style={{ gap: 8 }}>
+              {myDeadlines.length === 0 && <div className="muted" style={{ fontSize: '0.85rem', padding: '8px 2px' }}>Không có bài tập nào sắp đến hạn 🎉</div>}
+              {myDeadlines.map((a, i) => {
+                const due = formatDue(a.date);
+                const color = ['blue', 'amber', 'mint', 'orange'][i % 4];
+                return (
+                  <div className="row" key={a.id || i} style={{ padding: 11, border: '1px solid var(--line)', borderRadius: 'var(--r-md)' }}>
+                    <div className={`chip-ico bg-${color} t-${color}`} style={{ width: 40, height: 40 }}><ClipboardList size={18} /></div>
+                    <div style={{ flex: 1, minWidth: 0 }}>
+                      <div style={{ fontWeight: 700, fontSize: '0.88rem', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{a.title}</div>
+                      <div className={`flex items-center gap-6 ${due.urgent ? 't-coral' : 'muted'}`} style={{ fontSize: '0.78rem', fontWeight: 600, marginTop: 2 }}>
+                        <Clock size={13} /> {due.label}
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+            <button className="btn btn-ghost btn-sm" style={{ width: '100%', marginTop: 12 }} onClick={() => setActiveTab && setActiveTab('dashboard')}>Xem tất cả bài tập</button>
+          </SectionCard>
 
-        <div className="glass-panel glass-panel-hover" style={{ cursor: 'pointer' }} onClick={() => setActiveTab('meet')}>
-          <h3 style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px', fontSize: '1rem', fontWeight: 700 }}>
-            <BookOpen size={16} color="var(--accent-info)" />
-            <span>Phòng học trực tuyến EduMeet</span>
-          </h3>
-          <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', marginBottom: '12px' }}>
-            Tham gia phòng họp video học trực tuyến cùng thầy cô và bạn bè.
-          </p>
-          <span style={{ fontSize: '0.85rem', color: 'var(--accent-info)', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '4px' }}>
-            Vào phòng họp ngay <ArrowRight size={14} />
-          </span>
+          {/* Badges */}
+          <SectionCard title="Huy hiệu" icon={Trophy} delay="d4">
+            <div className="ds-grid cols-3" style={{ gap: 10 }}>
+              {BADGES.map((b, i) => (
+                <div className={`badge-tile bg-${b.color} ${b.got ? '' : 'locked'}`} key={i}>
+                  <div className="bt-ico" style={{ background: '#fff', fontSize: 26 }}>{b.ico}</div>
+                  <span className={`t-${b.color}`} style={{ fontSize: '0.74rem', fontWeight: 700 }}>{b.name}</span>
+                </div>
+              ))}
+            </div>
+          </SectionCard>
+
+          {/* Announcements */}
+          <SectionCard title="Bảng tin" icon={Bell} delay="d5">
+            <div className="col" style={{ gap: 12 }}>
+              {news.length === 0 && <div className="muted" style={{ fontSize: '0.85rem' }}>Chưa có thông báo mới.</div>}
+              {news.map((a, i) => {
+                const tag = bulletinTag(a);
+                return (
+                  <div key={a.id || i}>
+                    <div className="flex items-center gap-8" style={{ marginBottom: 5 }}>
+                      <Pill color={tag.color}>{tag.label}</Pill>
+                      <span className="muted" style={{ fontSize: '0.74rem' }}>{dmy(a.date)}</span>
+                    </div>
+                    <div style={{ fontWeight: 700, fontSize: '0.88rem', lineHeight: 1.4 }}>{a.title}</div>
+                    {i === 0 && news.length > 1 && <div style={{ height: 1, background: 'var(--line)', marginTop: 12 }} />}
+                  </div>
+                );
+              })}
+            </div>
+          </SectionCard>
         </div>
       </div>
     </div>

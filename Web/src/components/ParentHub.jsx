@@ -1,21 +1,19 @@
-import { useContext, useState, useRef, useEffect } from 'react';
+import { useContext, useState, useEffect } from 'react';
 import { AppContext } from '../context/AppContext';
 import { 
   FileText, 
   CreditCard, 
   CheckCircle, 
   AlertTriangle,
-  Signature,
-  RotateCcw,
   Send,
   MessageCircle,
   Calendar,
-  Award,
   BookOpen,
   Sparkles,
   Utensils
 } from 'lucide-react';
 import VietQRPayment from './VietQRPayment';
+import ParentOverview from './dash/ParentOverview';
 
 
 export default function ParentHub({ activeTab, setActiveTab }) {
@@ -23,12 +21,10 @@ export default function ParentHub({ activeTab, setActiveTab }) {
     selectedStudentId, 
     students, 
     parentQAs, 
-    signParentReport, 
     askParentQuestion,
     submitLeaveRequest,
     leaveRequests,
     teachers,
-    conductLogs,
     teacherEvaluations,
     submitTeacherEvaluation,
     assignments,
@@ -79,8 +75,6 @@ export default function ParentHub({ activeTab, setActiveTab }) {
   const [evalRating, setEvalRating] = useState(5);
   const [evalComment, setEvalComment] = useState('');
   
-  const canvasRef = useRef(null);
-  const [isDrawing, setIsDrawing] = useState(false);
 
   // Active student and parent data
   const student = students ? (students.find(s => s.id === selectedStudentId) || students[0]) : null;
@@ -111,97 +105,14 @@ export default function ParentHub({ activeTab, setActiveTab }) {
 
   const qas = parentQAs && student ? parentQAs.filter(q => q.parentName === student.parentName) : [];
   const studentLeaves = leaveRequests && student ? leaveRequests.filter(l => l.studentId === student.id) : [];
-  const studentConductLogs = conductLogs && student ? conductLogs.filter(l => l.studentId === student.id) : [];
-  const conductScore = 100 + studentConductLogs.reduce((acc, curr) => acc + curr.points, 0);
-  const conductGrade = conductScore >= 90 ? 'Tốt' : conductScore >= 70 ? 'Khá' : conductScore >= 50 ? 'Trung bình' : 'Yếu';
   const myEvaluations = teacherEvaluations && student ? teacherEvaluations.filter(e => e.raterRole === 'parent' && e.raterName === student.parentName) : [];
 
-  // Calculate GPA and classification for Sem 1, Sem 2, and Whole Year
-  const subjectsKeys = ['Math', 'Literature', 'Physics', 'English'];
-  
-  const sem1GradesArray = student.gradesSem1 ? Object.values(student.gradesSem1) : [];
-  const sem1Gpa = sem1GradesArray.length > 0 
-    ? (sem1GradesArray.reduce((a, b) => a + b, 0) / sem1GradesArray.length).toFixed(2)
-    : '0.00';
-
-  const sem2GradesArray = student.grades ? Object.values(student.grades) : [];
-  const sem2Gpa = sem2GradesArray.length > 0
-    ? (sem2GradesArray.reduce((a, b) => a + b, 0) / sem2GradesArray.length).toFixed(2)
-    : '0.00';
-
-  const wholeYearGrades = {};
-  subjectsKeys.forEach(sub => {
-    const s1 = student.gradesSem1?.[sub] || 0;
-    const s2 = student.grades?.[sub] || 0;
-    wholeYearGrades[sub] = parseFloat(((s1 + s2 * 2) / 3).toFixed(2));
-  });
-  const wholeYearGradesArray = Object.values(wholeYearGrades);
-  const wholeYearGpa = wholeYearGradesArray.length > 0
-    ? (wholeYearGradesArray.reduce((a, b) => a + b, 0) / wholeYearGradesArray.length).toFixed(2)
-    : '0.00';
-
-  const getClassification = (gpaScore) => {
-    const val = parseFloat(gpaScore);
-    if (val >= 8.0) return 'Giỏi';
-    if (val >= 6.5) return 'Khá';
-    if (val >= 5.0) return 'Trung bình';
-    return 'Yếu';
-  };
 
 
 
   // Format currency helper
   const formatCurrency = (val) => new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(val);
 
-  // Canvas Drawing Methods for parent signature
-  const startDrawing = (e) => {
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-    const ctx = canvas.getContext('2d');
-    ctx.strokeStyle = '#3b82f6'; // Blue signature ink
-    ctx.lineWidth = 3;
-    ctx.lineCap = 'round';
-    
-    const rect = canvas.getBoundingClientRect();
-    const x = e.clientX - rect.left;
-    const y = e.clientY - rect.top;
-    
-    ctx.beginPath();
-    ctx.moveTo(x, y);
-    setIsDrawing(true);
-  };
-
-  const draw = (e) => {
-    if (!isDrawing) return;
-    const canvas = canvasRef.current;
-    const ctx = canvas.getContext('2d');
-    const rect = canvas.getBoundingClientRect();
-    const x = e.clientX - rect.left;
-    const y = e.clientY - rect.top;
-    
-    ctx.lineTo(x, y);
-    ctx.stroke();
-  };
-
-  const stopDrawing = () => {
-    setIsDrawing(false);
-  };
-
-  const clearCanvas = () => {
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-    const ctx = canvas.getContext('2d');
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-  };
-
-  const submitSignature = () => {
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-    const signatureDataUrl = canvas.toDataURL();
-    
-    signParentReport(student.id, signatureDataUrl);
-    alert('Đã ký tên xác nhận học bạ của con thành công!');
-  };
 
   const handleQaSubmit = (e) => {
     e.preventDefault();
@@ -256,13 +167,6 @@ export default function ParentHub({ activeTab, setActiveTab }) {
 
   return (
     <div className="animate-fade">
-      <div style={{ marginBottom: '24px' }}>
-        <h1>Cổng Thông Tin Phụ Huynh</h1>
-        <p style={{ color: 'var(--text-secondary)' }}>
-          Họ tên học sinh: <strong>{student.name}</strong> • Lớp: {student.class} • Phụ huynh: {student.parentName} • Điểm rèn luyện: <strong style={{ color: 'var(--accent-secondary)' }}>{conductScore} ({conductGrade})</strong>
-        </p>
-      </div>
-
       {/* Sub Tabs */}
       <div className="tabs-container custom-scroll" style={{ overflowX: 'auto', display: 'flex', flexWrap: 'nowrap', gap: '4px', paddingBottom: '6px' }}>
         <button onClick={() => handleSubTabChange('grades')} className={`tab-btn ${activeSubTab === 'grades' ? 'active' : ''}`} style={{ whiteSpace: 'nowrap' }}>
@@ -298,146 +202,7 @@ export default function ParentHub({ activeTab, setActiveTab }) {
       </div>
 
       {/* Content panes based on sub-tabs */}
-      {activeSubTab === 'grades' && (
-        <div style={{ display: 'grid', gridTemplateColumns: '1.2fr 1fr', gap: '20px' }}>
-          {/* Grades Card */}
-          <div className="glass-panel">
-            <h2 style={{ marginBottom: '16px', display: 'flex', alignItems: 'center', gap: '8px', fontSize: '1.25rem' }}>
-              <FileText size={18} color="var(--accent-primary)" />
-              <span>Học bạ và Kết quả Học tập liên thông</span>
-            </h2>
-
-            <table className="premium-table" style={{ marginBottom: '24px' }}>
-              <thead>
-                <tr>
-                  <th>Môn Học</th>
-                  <th style={{ textAlign: 'center' }}>Học kì I</th>
-                  <th style={{ textAlign: 'center' }}>Học kì II</th>
-                  <th style={{ textAlign: 'center' }}>Cả năm</th>
-                  <th>Nhận Xét Khái Quát</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td style={{ fontWeight: 600 }}>Toán học</td>
-                  <td style={{ textAlign: 'center' }}>{(student.gradesSem1?.Math ?? 0).toFixed(1)}</td>
-                  <td style={{ textAlign: 'center', color: 'var(--accent-primary)', fontWeight: 600 }}>{(student.grades.Math ?? 0).toFixed(1)}</td>
-                  <td style={{ textAlign: 'center', color: 'var(--accent-secondary)', fontWeight: 700 }}>{((student.gradesSem1?.Math + student.grades.Math * 2) / 3).toFixed(2)}</td>
-                  <td>Tiếp thu nhanh, tư duy logic khá.</td>
-                </tr>
-                <tr>
-                  <td style={{ fontWeight: 600 }}>Ngữ văn</td>
-                  <td style={{ textAlign: 'center' }}>{(student.gradesSem1?.Literature ?? 0).toFixed(1)}</td>
-                  <td style={{ textAlign: 'center', color: 'var(--accent-primary)', fontWeight: 600 }}>{(student.grades.Literature ?? 0).toFixed(1)}</td>
-                  <td style={{ textAlign: 'center', color: 'var(--accent-secondary)', fontWeight: 700 }}>{((student.gradesSem1?.Literature + student.grades.Literature * 2) / 3).toFixed(2)}</td>
-                  <td>Cần chăm chỉ rèn luyện kĩ năng viết nghị luận.</td>
-                </tr>
-                <tr>
-                  <td style={{ fontWeight: 600 }}>Vật lý</td>
-                  <td style={{ textAlign: 'center' }}>{(student.gradesSem1?.Physics ?? 0).toFixed(1)}</td>
-                  <td style={{ textAlign: 'center', color: 'var(--accent-primary)', fontWeight: 600 }}>{(student.grades.Physics ?? 0).toFixed(1)}</td>
-                  <td style={{ textAlign: 'center', color: 'var(--accent-secondary)', fontWeight: 700 }}>{((student.gradesSem1?.Physics + student.grades.Physics * 2) / 3).toFixed(2)}</td>
-                  <td>Làm bài tập đầy đủ, hiểu bài tốt.</td>
-                </tr>
-                <tr>
-                  <td style={{ fontWeight: 600 }}>Tiếng Anh</td>
-                  <td style={{ textAlign: 'center' }}>{(student.gradesSem1?.English ?? 0).toFixed(1)}</td>
-                  <td style={{ textAlign: 'center', color: 'var(--accent-primary)', fontWeight: 600 }}>{(student.grades.English ?? 0).toFixed(1)}</td>
-                  <td style={{ textAlign: 'center', color: 'var(--accent-secondary)', fontWeight: 700 }}>{((student.gradesSem1?.English + student.grades.English * 2) / 3).toFixed(2)}</td>
-                  <td>Ngữ pháp vững vàng, giao tiếp trôi chảy.</td>
-                </tr>
-                <tr style={{ background: 'rgba(99, 102, 241, 0.05)', borderTop: '2px solid var(--border-color)' }}>
-                  <td style={{ fontWeight: 700 }}>GPA trung bình</td>
-                  <td style={{ textAlign: 'center', fontWeight: 700 }}>{sem1Gpa}</td>
-                  <td style={{ textAlign: 'center', fontWeight: 700, color: 'var(--accent-primary)' }}>{sem2Gpa}</td>
-                  <td style={{ textAlign: 'center', fontWeight: 800, color: 'var(--accent-secondary)', fontSize: '1.05rem' }}>{wholeYearGpa}</td>
-                  <td style={{ fontWeight: 600 }}>
-                    Xếp loại HK1: <span className="badge badge-success" style={{ padding: '2px 6px', fontSize: '0.75rem' }}>{getClassification(sem1Gpa)}</span> • HK2: <span className="badge badge-success" style={{ padding: '2px 6px', fontSize: '0.75rem' }}>{getClassification(sem2Gpa)}</span> • Cả năm: <span className="badge badge-success" style={{ padding: '2px 6px', fontSize: '0.75rem' }}>{getClassification(wholeYearGpa)}</span>
-                  </td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-
-          {/* Signature Card */}
-          <div className="glass-panel">
-            <h2 style={{ marginBottom: '16px', display: 'flex', alignItems: 'center', gap: '8px', fontSize: '1.25rem' }}>
-              <Signature size={18} color="var(--accent-primary)" />
-              <span>Phụ Huynh Ký Xác Nhận Học Bạ</span>
-            </h2>
-
-            {student.parentSignature ? (
-              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '30px 10px', background: 'rgba(16, 185, 129, 0.05)', border: '1px dashed var(--accent-secondary)', borderRadius: '12px' }}>
-                <span className="badge badge-success" style={{ marginBottom: '12px', fontSize: '0.9rem', gap: '6px' }}>
-                  <CheckCircle size={14} /> Bảng điểm đã được phụ huynh ký xác nhận
-                </span>
-                <div style={{ padding: '8px', background: '#fff', borderRadius: '8px' }}>
-                  <img src={student.parentSignature} alt="Parent Signature" style={{ height: '50px', display: 'block' }} />
-                </div>
-                <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)', marginTop: '8px' }}>Người ký: {student.parentName}</span>
-              </div>
-            ) : (
-              <div>
-                <p style={{ fontSize: '0.9rem', color: 'var(--text-secondary)', marginBottom: '12px' }}>
-                  Kính mong phụ huynh ký xác nhận sau khi đã xem xét kĩ kết quả học tập của học sinh.
-                </p>
-
-                <div className="signature-box" style={{ width: '100%', height: '160px', marginBottom: '16px' }}>
-                  <canvas
-                    ref={canvasRef}
-                    width={380}
-                    height={160}
-                    onMouseDown={startDrawing}
-                    onMouseMove={draw}
-                    onMouseUp={stopDrawing}
-                    onMouseLeave={stopDrawing}
-                    style={{ width: '100%', height: '100%', display: 'block' }}
-                  />
-                </div>
-
-                <div style={{ display: 'flex', gap: '12px' }}>
-                  <button onClick={clearCanvas} className="btn btn-secondary" style={{ flex: 1, gap: '6px' }}>
-                    <RotateCcw size={14} />
-                    <span>Vẽ lại</span>
-                  </button>
-                  <button onClick={submitSignature} className="btn btn-primary" style={{ flex: 1, gap: '6px' }}>
-                    <CheckCircle size={14} />
-                    <span>Xác nhận ký</span>
-                  </button>
-                </div>
-              </div>
-            )}
-          </div>
-          
-          {/* Conduct Logs Section */}
-          <div className="glass-panel" style={{ gridColumn: 'span 2', marginTop: '20px' }}>
-            <h2 style={{ marginBottom: '16px', display: 'flex', alignItems: 'center', gap: '8px', fontSize: '1.25rem' }}>
-              <Award size={18} color="var(--accent-secondary)" />
-              <span>Nhật ký Rèn luyện & Thi đua của học sinh</span>
-            </h2>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-              {studentConductLogs.length === 0 ? (
-                <div style={{ padding: '16px', textAlign: 'center', color: 'var(--text-muted)' }}>
-                  Chưa có ghi nhận rèn luyện học tập đặc biệt.
-                </div>
-              ) : (
-                studentConductLogs.map(log => (
-                  <div key={log.id} style={{ display: 'flex', justifyContent: 'space-between', padding: '12px 16px', background: 'rgba(255, 255, 255, 0.01)', border: '1px solid var(--border-card)', borderRadius: '8px', fontSize: '0.9rem' }}>
-                    <div>
-                      <strong style={{ color: log.points > 0 ? 'var(--accent-secondary)' : 'var(--accent-danger)' }}>
-                        {log.points > 0 ? `+${log.points}` : log.points} điểm
-                      </strong>
-                      <span>: {log.reason}</span>
-                      <span style={{ color: 'var(--text-muted)', fontSize: '0.8rem' }}> (Ghi nhận bởi: {log.teacherName})</span>
-                    </div>
-                    <span style={{ color: 'var(--text-muted)', fontSize: '0.8rem' }}>{log.date}</span>
-                  </div>
-                ))
-              )}
-            </div>
-          </div>
-        </div>
-      )}
+      {activeSubTab === 'grades' && <ParentOverview childName={student?.name} childClass={student?.class} />}
 
       {activeSubTab === 'fees' && (
         <div className="glass-panel">

@@ -2,8 +2,6 @@ import { useContext, useState } from 'react';
 import { AppContext } from '../context/AppContext';
 import { 
   Users, 
-  GraduationCap, 
-  DollarSign, 
   TrendingUp,
   Megaphone,
   Award,
@@ -14,7 +12,6 @@ import {
   HelpCircle,
   Calendar,
   BookOpen,
-  XCircle,
   Check,
   X,
   PieChart,
@@ -23,14 +20,13 @@ import {
   Briefcase,
   ClipboardList
 } from 'lucide-react';
-import AIRiskPanel from './AIRiskPanel';
+import AdminOverview from './dash/AdminOverview';
 
 
 export default function PrincipalDashboard() {
   const { 
     students, 
-    teachers, 
-    journalEntries,
+    teachers,
     parentQAs,
     addAnnouncement, 
     createFeeItem,
@@ -39,7 +35,6 @@ export default function PrincipalDashboard() {
     approveLeaveRequest,
     lessonPlans,
     reviewLessonPlan,
-    conductLogs,
     teacherEvaluations,
     assignments,
     submissions,
@@ -52,11 +47,6 @@ export default function PrincipalDashboard() {
     mockExamHistory,
     teacherLeaveRequests,
     approveTeacherLeaveRequest,
-    cafeteriaRegistrations,
-    cafeteriaFeedback,
-    studentWallets,
-    wellnessLogs,
-    wellnessAppointments
   } = useContext(AppContext);
 
   // Sub tab control
@@ -82,8 +72,6 @@ export default function PrincipalDashboard() {
   // QA answer override state
   const [qaReplies, setQaReplies] = useState({});
 
-  // Thi đua approval signature state
-  const [thiDuaApproved, setThiDuaApproved] = useState(false);
 
   // Mock Exam States
   const [pMockSearch, setPMockSearch] = useState('');
@@ -94,63 +82,16 @@ export default function PrincipalDashboard() {
   const [clubBudgets, setClubBudgets] = useState({});
 
   // Calculations
-  const totalStudents = students.length;
-  const totalTeachers = teachers.length;
   const allAttempts = mockExamHistory || [];
   
   const topScorers = [...allAttempts]
     .sort((a, b) => b.score - a.score)
     .slice(0, 5);
 
-  // Expected vs Collected fees aggregate
-  let totalFeesCount = 0;
-  let paidFeesCount = 0;
-  students.forEach(s => {
-    s.feeStatus.forEach(f => {
-      totalFeesCount++;
-      if (f.paid) paidFeesCount++;
-    });
-  });
-  const feePaidPercentage = totalFeesCount > 0 ? Math.round((paidFeesCount / totalFeesCount) * 100) : 0;
 
-  // GPA calculation
-  let totalGpaSum = 0;
-  students.forEach(s => {
-    const subjects = Object.values(s.grades);
-    const avg = subjects.reduce((a, b) => a + b, 0) / subjects.length;
-    totalGpaSum += avg;
-  });
-  const schoolAvgGpa = totalStudents > 0 ? (totalGpaSum / totalStudents).toFixed(2) : 0;
 
-  // Thi đua weekly points calculation (Calculate 12A1 dynamically, mock others)
-  const getRatingValue = (r) => {
-    if (r === 'A') return 10;
-    if (r === 'B') return 8;
-    if (r === 'C') return 6;
-    return 4;
-  };
-  const entries12A1 = journalEntries.filter(j => j.class === '12A1');
-  const points12A1 = entries12A1.reduce((acc, curr) => acc + getRatingValue(curr.rating), 0);
-  const score12A1 = entries12A1.length > 0 ? parseFloat((points12A1 / entries12A1.length).toFixed(1)) : 9.3;
 
-  const classRankings = [
-    { name: '12A1', score: score12A1, teacher: 'Thầy Triết' },
-    { name: '12A2', score: 9.0, teacher: 'Cô Vân' },
-    { name: '11A1', score: 8.5, teacher: 'Thầy Duy' },
-    { name: '10A1', score: 7.0, teacher: 'Cô Hà' }
-  ].sort((a, b) => b.score - a.score);
 
-  // Conduct points calculations
-  const getStudentConductSummaries = () => {
-    return students.map(s => {
-      const logs = conductLogs ? conductLogs.filter(l => l.studentId === s.id) : [];
-      const score = 100 + logs.reduce((sum, curr) => sum + curr.points, 0);
-      return { student: s, score };
-    });
-  };
-  const studentConductScores = getStudentConductSummaries();
-  const topConduct = [...studentConductScores].sort((a, b) => b.score - a.score).slice(0, 3);
-  const warnedConduct = studentConductScores.filter(s => s.score < 100);
 
   // Extract unique Fee templates and aggregate collection rates
   const getFinanceLedger = () => {
@@ -263,13 +204,6 @@ export default function PrincipalDashboard() {
 
   return (
     <div className="animate-fade">
-      <div style={{ marginBottom: '24px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-        <div>
-          <h1>Hệ Thống Giám Sát Ban Giám Hiệu</h1>
-          <p style={{ color: 'var(--text-secondary)' }}>Quản trị học vụ, điều phối tài chính, duyệt sổ sách học đường tập trung.</p>
-        </div>
-      </div>
-
       {/* Sub tabs nav */}
       <div className="tabs-container" style={{ marginBottom: '24px', display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
         <button onClick={() => setSubTab('overview')} className={`tab-btn ${subTab === 'overview' ? 'active' : ''}`}>
@@ -308,325 +242,7 @@ export default function PrincipalDashboard() {
       </div>
 
       {/* Overview Subtab content */}
-      {subTab === 'overview' && (
-        <div>
-          {/* Grid Stats */}
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '20px', marginBottom: '24px' }}>
-            <div className="glass-panel stat-card">
-              <div>
-                <span style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', fontWeight: 600 }}>TỔNG HỌC SINH</span>
-                <div style={{ fontSize: '1.8rem', marginTop: '6px', fontWeight: 'bold' }}>{totalStudents} học sinh</div>
-              </div>
-              <div className="stat-icon"><Users size={20} /></div>
-            </div>
-
-            <div className="glass-panel stat-card">
-              <div>
-                <span style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', fontWeight: 600 }}>TỔNG GIÁO VIÊN</span>
-                <div style={{ fontSize: '1.8rem', marginTop: '6px', fontWeight: 'bold' }}>{totalTeachers} giáo viên</div>
-              </div>
-              <div className="stat-icon" style={{ color: 'var(--accent-secondary)', background: 'var(--accent-secondary-glow)' }}><GraduationCap size={20} /></div>
-            </div>
-
-            <div className="glass-panel stat-card">
-              <div>
-                <span style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', fontWeight: 600 }}>THU HỌC PHÍ TRƯỜNG</span>
-                <div style={{ fontSize: '1.8rem', marginTop: '6px', fontWeight: 'bold' }}>{feePaidPercentage}% hoàn tất</div>
-              </div>
-              <div className="stat-icon" style={{ color: 'var(--accent-warning)', background: 'rgba(245, 158, 11, 0.1)' }}><DollarSign size={20} /></div>
-            </div>
-
-            <div className="glass-panel stat-card">
-              <div>
-                <span style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', fontWeight: 600 }}>ĐIỂM TRUNG BÌNH CHUNG</span>
-                <div style={{ fontSize: '1.8rem', marginTop: '6px', fontWeight: 'bold' }}>{schoolAvgGpa} / 10</div>
-              </div>
-              <div className="stat-icon" style={{ color: 'var(--accent-info)', background: 'rgba(14, 165, 233, 0.1)' }}><TrendingUp size={20} /></div>
-            </div>
-          </div>
-
-          <div style={{ display: 'grid', gridTemplateColumns: '1.2fr 1fr', gap: '20px' }}>
-            {/* SVG budget flow chart */}
-            <div className="glass-panel">
-              <h2 style={{ marginBottom: '16px', fontSize: '1.25rem' }}>Dòng tài chính học kỳ (VND)</h2>
-              <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'flex-end', height: '220px', gap: '20px', paddingBottom: '20px', borderBottom: '1px solid var(--border-card)' }}>
-                {[
-                  { label: 'Expected Revenue', value: totalFeesCount * 1200000, color: 'linear-gradient(to top, #94a3b8, #cbd5e1)' },
-                  { label: 'Actual Collected', value: paidFeesCount * 1200000, color: 'linear-gradient(to top, var(--accent-primary), #a78bfa)' }
-                ].map((bar, i) => {
-                  const maxVal = totalFeesCount * 1200000 || 10000000;
-                  const pct = Math.round((bar.value / maxVal) * 100) || 50;
-                  return (
-                    <div key={i} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', flex: 1 }}>
-                      <div style={{ fontSize: '0.85rem', fontWeight: 700, color: 'var(--text-primary)', marginBottom: '8px' }}>{formatCurrency(bar.value)}</div>
-                      <div style={{
-                        width: '70%',
-                        height: `${pct * 1.6}px`,
-                        background: bar.color,
-                        borderRadius: '8px 8px 0 0',
-                        boxShadow: '0 4px 12px rgba(0,0,0,0.05)',
-                        transition: 'height 0.8s ease'
-                      }}></div>
-                      <span style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', marginTop: '8px', fontWeight: 600 }}>{bar.label}</span>
-                    </div>
-                  );
-                })}
-              </div>
-            </div>
-
-            {/* Thi đua class ranking */}
-            <div className="glass-panel" style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
-              <div>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
-                  <h2 style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '1.25rem', margin: 0 }}>
-                    <Award size={18} color="var(--accent-primary)" />
-                    <span>Bảng Xếp Hạng Thi Đua Tuần 35</span>
-                  </h2>
-                  {thiDuaApproved ? (
-                    <span className="badge badge-success" style={{ gap: '2px', fontSize: '0.75rem' }}>
-                      <CheckCircle size={10} /> Đã duyệt
-                    </span>
-                  ) : (
-                    <span className="badge badge-warning" style={{ fontSize: '0.75rem' }}>Đợi duyệt</span>
-                  )}
-                </div>
- 
-                {/* SVG horizontal bar chart */}
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', marginBottom: '20px' }}>
-                  {classRankings.map((cRank, idx) => {
-                    const widthPct = (cRank.score / 10) * 100;
-                    return (
-                      <div key={cRank.name}>
-                        <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.85rem', marginBottom: '4px' }}>
-                          <span style={{ fontWeight: 600 }}>#{idx+1} Lớp {cRank.name} ({cRank.teacher})</span>
-                          <strong style={{ color: 'var(--accent-primary)' }}>{cRank.score} điểm</strong>
-                        </div>
-                        <div style={{ width: '100%', height: '10px', background: 'rgba(0,0,0,0.05)', borderRadius: '99px', overflow: 'hidden' }}>
-                          <div style={{ 
-                            width: `${widthPct}%`, 
-                            height: '100%', 
-                            background: idx === 0 ? 'linear-gradient(to right, var(--accent-secondary), #34d399)' : 'linear-gradient(to right, var(--accent-primary), #818cf8)',
-                            borderRadius: '99px' 
-                          }}></div>
-                        </div>
-                      </div>
-                    );
-                  })}
-                </div>
-              </div>
- 
-              {!thiDuaApproved ? (
-                <button onClick={() => { setThiDuaApproved(true); alert('Ban Giám Hiệu đã phê duyệt và ký đóng dấu bảng xếp hạng thi đua tuần thành công!'); }} className="btn btn-primary" style={{ width: '100%' }}>
-                  Duyệt và ký tên bảng thi đua
-                </button>
-              ) : (
-                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', padding: '10px', background: 'rgba(16, 185, 129, 0.05)', border: '1px dashed var(--accent-secondary)', borderRadius: '10px' }}>
-                  <CheckCircle size={16} color="var(--accent-secondary)" />
-                  <span style={{ fontSize: '0.85rem', fontWeight: 600, color: 'var(--accent-secondary)' }}>BGH đã ký phê duyệt điện tử sổ thi đua</span>
-                </div>
-              )}
-            </div>
-          </div>
-          
-          {/* Conduct Scores BGH Board */}
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px', marginTop: '20px' }}>
-            {/* Top disciplined students */}
-            <div className="glass-panel">
-              <h2 style={{ marginBottom: '16px', display: 'flex', alignItems: 'center', gap: '8px', fontSize: '1.25rem' }}>
-                <Award size={18} color="var(--accent-secondary)" />
-                <span>Bảng Vàng Thi Đua Cá Nhân (Top rèn luyện)</span>
-              </h2>
-              <table className="premium-table">
-                <thead>
-                  <tr>
-                    <th>Học Sinh</th>
-                    <th>Lớp</th>
-                    <th>Điểm Rèn Luyện</th>
-                    <th>Xếp Loại</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {topConduct.map((item, idx) => (
-                    <tr key={idx}>
-                      <td style={{ fontWeight: 600 }}>{item.student.name}</td>
-                      <td><span className="badge badge-success">Lớp {item.student.class}</span></td>
-                      <td style={{ fontWeight: 700, color: 'var(--accent-secondary)' }}>{item.score}</td>
-                      <td><span className="badge badge-success">Tốt</span></td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-
-            {/* Disciplined warning lists */}
-            <div className="glass-panel">
-              <h2 style={{ marginBottom: '16px', display: 'flex', alignItems: 'center', gap: '8px', fontSize: '1.25rem' }}>
-                <XCircle size={18} color="var(--accent-danger)" />
-                <span>Nhật ký rèn luyện cần lưu ý (Dưới 100 điểm)</span>
-              </h2>
-              {warnedConduct.length === 0 ? (
-                <div style={{ padding: '24px', textAlign: 'center', color: 'var(--text-muted)' }}>
-                  Không có học sinh nào bị trừ điểm rèn luyện.
-                </div>
-              ) : (
-                <table className="premium-table">
-                  <thead>
-                    <tr>
-                      <th>Học Sinh</th>
-                      <th>Lớp</th>
-                      <th>Điểm Hiện Tại</th>
-                      <th>Nhật ký gần nhất</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {warnedConduct.map((item, idx) => {
-                      const logs = conductLogs.filter(l => l.studentId === item.student.id);
-                      const lastLog = logs.length > 0 ? logs[logs.length - 1] : { reason: 'Chưa có' };
-                      return (
-                        <tr key={idx}>
-                          <td style={{ fontWeight: 600 }}>{item.student.name}</td>
-                          <td><span className="badge badge-danger">Lớp {item.student.class}</span></td>
-                          <td style={{ fontWeight: 700, color: 'var(--accent-danger)' }}>{item.score}</td>
-                          <td style={{ fontSize: '0.85rem', maxWidth: '160px', textOverflow: 'ellipsis', overflow: 'hidden', whiteSpace: 'nowrap' }} title={lastLog.reason}>
-                            {lastLog.reason}
-                          </td>
-                        </tr>
-                      );
-                    })}
-                  </tbody>
-                </table>
-              )}
-            </div>
-          </div>
-
-          {/* Căng tin & Sức khỏe Tâm lý Học đường */}
-          <div style={{ display: 'grid', gridTemplateColumns: '1.2fr 1fr', gap: '20px', marginTop: '20px' }}>
-            {/* Canteen statistics */}
-            <div className="glass-panel">
-              <h2 style={{ marginBottom: '16px', display: 'flex', alignItems: 'center', gap: '8px', fontSize: '1.25rem' }}>
-                <span>🍱 Báo Cáo Căng Tin & Suất Ăn Bán Trú</span>
-              </h2>
-              
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', marginBottom: '16px' }}>
-                <div style={{ background: 'rgba(0,0,0,0.02)', padding: '12px', borderRadius: '12px' }}>
-                  <span style={{ fontSize: '0.75rem', color: 'var(--text-secondary)' }}>SUẤT ĂN ĐÃ ĐĂNG KÝ</span>
-                  <div style={{ fontSize: '1.4rem', fontWeight: 'bold', color: 'var(--accent-primary)', marginTop: '4px' }}>
-                    {(cafeteriaRegistrations || []).length} suất ăn
-                  </div>
-                </div>
-                <div style={{ background: 'rgba(0,0,0,0.02)', padding: '12px', borderRadius: '12px' }}>
-                  <span style={{ fontSize: '0.75rem', color: 'var(--text-secondary)' }}>TỔNG DƯ VÍ HỌC SINH</span>
-                  <div style={{ fontSize: '1.4rem', fontWeight: 'bold', color: 'var(--accent-secondary)', marginTop: '4px' }}>
-                    {new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(
-                      Object.values(studentWallets || {}).reduce((sum, w) => sum + (w.balance || 0), 0)
-                    )}
-                  </div>
-                </div>
-              </div>
-
-              {/* Menu and feedback summary */}
-              <div style={{ fontSize: '0.85rem' }}>
-                <strong style={{ display: 'block', marginBottom: '8px' }}>Nhận xét/Đánh giá suất ăn từ học sinh:</strong>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', maxHeight: '150px', overflowY: 'auto' }}>
-                  {(cafeteriaFeedback && cafeteriaFeedback.length > 0) ? (
-                    cafeteriaFeedback.map((fb, idx) => (
-                      <div key={idx} style={{ background: '#fff', border: '1px solid rgba(0,0,0,0.04)', padding: '8px 12px', borderRadius: '8px' }}>
-                        <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.75rem', fontWeight: 600 }}>
-                          <span>{fb.studentName || 'Học sinh'}</span>
-                          <span style={{ color: '#b45309' }}>{'★'.repeat(fb.rating)}</span>
-                        </div>
-                        <div style={{ fontSize: '0.78rem', color: 'var(--text-secondary)', marginTop: '2px' }}>{fb.comment}</div>
-                      </div>
-                    ))
-                  ) : (
-                    <div style={{ color: 'var(--text-muted)', fontSize: '0.78rem' }}>Chưa có phản hồi món ăn nào.</div>
-                  )}
-                </div>
-              </div>
-            </div>
-
-            {/* Stress level distribution */}
-            <div className="glass-panel">
-              <h2 style={{ marginBottom: '16px', display: 'flex', alignItems: 'center', gap: '8px', fontSize: '1.25rem' }}>
-                <span>🧠 Chỉ Số Sức Khỏe Tâm Lý & Stress Học Đường</span>
-              </h2>
-
-              {/* Stress logs count */}
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
-                <span style={{ fontSize: '0.85rem', fontWeight: 600 }}>Phân bổ Stress học sinh toàn trường:</span>
-                <span className="badge badge-info">{(wellnessLogs || []).length} lượt ghi nhận</span>
-              </div>
-
-              {/* Progress stress bar charts */}
-              {(() => {
-                const logs = wellnessLogs || [];
-                const highStress = logs.filter(l => l.stressLevel >= 7).length;
-                const midStress = logs.filter(l => l.stressLevel >= 4 && l.stressLevel < 7).length;
-                const lowStress = logs.filter(l => l.stressLevel < 4).length;
-                const total = logs.length || 1;
-
-                const highPct = Math.round((highStress / total) * 100);
-                const midPct = Math.round((midStress / total) * 100);
-                const lowPct = Math.round((lowStress / total) * 100);
-
-                return (
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-                    <div>
-                      <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.8rem', marginBottom: '4px' }}>
-                        <span>Căng thẳng cao (Stress 7-10)</span>
-                        <strong>{highStress} HS ({highPct}%)</strong>
-                      </div>
-                      <div style={{ width: '100%', height: '8px', background: 'rgba(0,0,0,0.05)', borderRadius: '4px', overflow: 'hidden' }}>
-                        <div style={{ width: `${highPct}%`, height: '100%', background: '#ef4444', borderRadius: '4px' }} />
-                      </div>
-                    </div>
-                    <div>
-                      <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.8rem', marginBottom: '4px' }}>
-                        <span>Áp lực trung bình (Stress 4-6)</span>
-                        <strong>{midStress} HS ({midPct}%)</strong>
-                      </div>
-                      <div style={{ width: '100%', height: '8px', background: 'rgba(0,0,0,0.05)', borderRadius: '4px', overflow: 'hidden' }}>
-                        <div style={{ width: `${midPct}%`, height: '100%', background: '#f59e0b', borderRadius: '4px' }} />
-                      </div>
-                    </div>
-                    <div>
-                      <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.8rem', marginBottom: '4px' }}>
-                        <span>Tâm trạng thoải mái (Stress 1-3)</span>
-                        <strong>{lowStress} HS ({lowPct}%)</strong>
-                      </div>
-                      <div style={{ width: '100%', height: '8px', background: 'rgba(0,0,0,0.05)', borderRadius: '4px', overflow: 'hidden' }}>
-                        <div style={{ width: `${lowPct}%`, height: '100%', background: '#10b981', borderRadius: '4px' }} />
-                      </div>
-                    </div>
-                  </div>
-                );
-              })()}
-
-              {/* Consultation queue */}
-              <div style={{ marginTop: '16px', borderTop: '1px solid rgba(0,0,0,0.05)', paddingTop: '12px' }}>
-                <strong style={{ fontSize: '0.82rem', display: 'block', marginBottom: '6px' }}>Lịch hẹn tư vấn tâm lý đang chờ duyệt:</strong>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-                  {(wellnessAppointments && wellnessAppointments.filter(a => a.status === 'pending').length > 0) ? (
-                    wellnessAppointments.filter(a => a.status === 'pending').map((app, idx) => (
-                      <div key={idx} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: '#fff', border: '1px solid rgba(0,0,0,0.04)', padding: '6px 10px', borderRadius: '8px', fontSize: '0.78rem' }}>
-                        <span>Lịch ngày {app.date.split('-').reverse().join('/')} ({app.timeSlot})</span>
-                        <span className="badge badge-warning" style={{ fontSize: '0.65rem' }}>Đang chờ</span>
-                      </div>
-                    ))
-                  ) : (
-                    <div style={{ color: 'var(--text-muted)', fontSize: '0.78rem' }}>Không có ca tư vấn nào đang chờ.</div>
-                  )}
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* AI Academic & Operational Risk Prediction */}
-          <div style={{ marginTop: '24px' }}>
-            <AIRiskPanel />
-          </div>
-        </div>
-      )}
+      {subTab === 'overview' && <AdminOverview />}
 
       {/* Finance manager view */}
       {subTab === 'finance' && (

@@ -5,7 +5,6 @@ import {
   Users, 
   MessageSquare, 
   Award, 
-  Edit3, 
   CheckCircle,
   Clock,
   Send,
@@ -17,7 +16,7 @@ import {
   ClipboardList,
   Sparkles
 } from 'lucide-react';
-import AIRiskPanel from './AIRiskPanel';
+import TeacherOverview from './dash/TeacherOverview';
 
 
 export default function TeacherDashboard({ activeTab: globalActiveTab, setActiveTab: setGlobalActiveTab }) {
@@ -44,7 +43,8 @@ export default function TeacherDashboard({ activeTab: globalActiveTab, setActive
     addCustomExam,
     teachers,
     teacherLeaveRequests,
-    submitTeacherLeaveRequest
+    submitTeacherLeaveRequest,
+    userSession
   } = useContext(AppContext);
 
   const [activeTab, setActiveTab] = useState('students'); // students, qa, leaves, lesson_plans, conduct, assignments, teacher_leaves
@@ -215,11 +215,6 @@ export default function TeacherDashboard({ activeTab: globalActiveTab, setActive
   const myCoverSchedules = teacherLeaveRequests ? teacherLeaveRequests.filter(r => r.substituteTeacherId === 'T01' && r.status === 'approved') : [];
   const myTeacherLeaves = teacherLeaveRequests ? teacherLeaveRequests.filter(r => r.teacherId === 'T01') : [];
 
-  // Handle grade edit opening
-  const openGradingModal = (student) => {
-    setSelectedStudent(student);
-    setGradesInput(student.grades);
-  };
 
   const handleGradeSubmit = (e) => {
     e.preventDefault();
@@ -314,11 +309,6 @@ export default function TeacherDashboard({ activeTab: globalActiveTab, setActive
 
   return (
     <div className="animate-fade">
-      <div style={{ marginBottom: '28px' }}>
-        <h1>Bảng Điều Khiển Giáo Viên</h1>
-        <p style={{ color: 'var(--text-secondary)' }}>Quản lý lớp học 12A1 • Chủ nhiệm: Thầy Nguyễn Minh Triết</p>
-      </div>
-
       {/* Sub Tabs */}
       <div className="tabs-container" style={{ overflowX: 'auto', display: 'flex', flexWrap: 'nowrap', gap: '4px', paddingBottom: '6px' }} className="custom-scroll">
         <button onClick={() => handleSubTabChange('students')} className={`tab-btn ${activeTab === 'students' ? 'active' : ''}`} style={{ whiteSpace: 'nowrap' }}>
@@ -354,107 +344,7 @@ export default function TeacherDashboard({ activeTab: globalActiveTab, setActive
       </div>
 
       {/* Content Panes */}
-      {activeTab === 'students' && (
-        <div>
-          {/* Grid Overview */}
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: '20px', marginBottom: '30px' }}>
-            <div className="glass-panel stat-card">
-              <div>
-                <span style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', fontWeight: 500 }}>HỌC SINH LỚP CHỦ NHIỆM</span>
-                <div style={{ fontSize: '2rem', marginTop: '6px', fontWeight: 'bold' }}>{classStudents.length} học sinh</div>
-              </div>
-              <div className="stat-icon"><Users size={24} /></div>
-            </div>
-
-            <div className="glass-panel stat-card">
-              <div>
-                <span style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', fontWeight: 500 }}>CÂU HỎI PHỤ HUYNH CHƯA TRẢ LỜI</span>
-                <div style={{ fontSize: '2rem', marginTop: '6px', fontWeight: 'bold' }}>
-                  {parentQAs.filter(q => q.status === 'pending').length} câu hỏi
-                </div>
-              </div>
-              <div className="stat-icon" style={{ color: 'var(--accent-warning)', background: 'rgba(245, 158, 11, 0.1)' }}><MessageSquare size={24} /></div>
-            </div>
-          </div>
-
-          {/* Class Students list and Grade management */}
-          <div className="glass-panel" style={{ marginBottom: '30px' }}>
-            <h2 style={{ marginBottom: '16px', display: 'flex', alignItems: 'center', gap: '8px', fontSize: '1.25rem' }}>
-              <Award size={18} color="var(--accent-primary)" />
-              <span>Sổ điểm & Học bạ Lớp 12A1</span>
-            </h2>
-            
-            <div style={{ overflowX: 'auto' }}>
-              <table className="premium-table">
-                <thead>
-                  <tr>
-                    <th>Mã HS</th>
-                    <th>Ảnh</th>
-                    <th>Tên Học Sinh</th>
-                    <th>Toán</th>
-                    <th>Ngữ Văn</th>
-                    <th>Vật Lý</th>
-                    <th>Tiếng Anh</th>
-                    <th>ĐTB lớp</th>
-                    <th>Phụ huynh ký</th>
-                    <th>Thao tác</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {classStudents.map(std => {
-                    const subG = Object.values(std.grades);
-                    const avg = (subG.reduce((a, b) => a + b, 0) / subG.length).toFixed(2);
-                    return (
-                      <tr key={std.id}>
-                        <td style={{ fontWeight: 600, color: 'var(--accent-primary)' }}>{std.id}</td>
-                        <td>
-                          <img 
-                            src={std.avatarUrl || 'https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?w=100&auto=format&fit=crop&q=80'} 
-                            alt={std.name} 
-                            style={{ 
-                              width: '38px', 
-                              height: '38px', 
-                              borderRadius: '50%', 
-                              objectFit: 'cover', 
-                              border: '2px solid rgba(79, 70, 229, 0.1)'
-                            }} 
-                          />
-                        </td>
-                        <td style={{ fontWeight: 600 }}>{std.name}</td>
-                        <td>{std.grades.Math}</td>
-                        <td>{std.grades.Literature}</td>
-                        <td>{std.grades.Physics}</td>
-                        <td>{std.grades.English}</td>
-                        <td style={{ fontWeight: 700, color: avg >= 8 ? 'var(--accent-secondary)' : 'var(--text-primary)' }}>{avg}</td>
-                        <td>
-                          {std.parentSignature ? (
-                            <span className="badge badge-success" style={{ gap: '4px' }}>
-                              <CheckCircle size={12} /> Đã ký
-                            </span>
-                          ) : (
-                            <span className="badge badge-danger">Chưa ký</span>
-                          )}
-                        </td>
-                        <td>
-                          <button onClick={() => openGradingModal(std)} className="btn btn-secondary" style={{ padding: '6px 12px', fontSize: '0.85rem' }}>
-                            <Edit3 size={14} />
-                            <span>Chấm điểm</span>
-                          </button>
-                        </td>
-                      </tr>
-                    );
-                  })}
-                </tbody>
-              </table>
-            </div>
-          </div>
-
-          {/* AI Student Risk Panel */}
-          <div style={{ marginTop: '24px' }}>
-            <AIRiskPanel compact={true} maxShow={5} />
-          </div>
-        </div>
-      )}
+      {activeTab === 'students' && <TeacherOverview teacherName={userSession?.displayName} />}
 
       {activeTab === 'qa' && (
         /* Parent QAs Panel */
