@@ -14,7 +14,9 @@ import {
   Check,
   X,
   ClipboardList,
-  Sparkles
+  Sparkles,
+  Upload,
+  Paperclip
 } from 'lucide-react';
 import TeacherOverview from './dash/TeacherOverview';
 
@@ -104,6 +106,7 @@ export default function TeacherDashboard({ activeTab: globalActiveTab, setActive
   const [newAssignmentClassTarget, setNewAssignmentClassTarget] = useState('12A1');
   const [newAssignmentContent, setNewAssignmentContent] = useState('');
   const [newAssignmentDeadline, setNewAssignmentDeadline] = useState('');
+  const [selectedFile, setSelectedFile] = useState(null);
   const [selectedGradingSubmission, setSelectedGradingSubmission] = useState(null);
   const [gradingScore, setGradingScore] = useState('');
   const [gradingFeedback, setGradingFeedback] = useState('');
@@ -276,6 +279,12 @@ export default function TeacherDashboard({ activeTab: globalActiveTab, setActive
     alert('Đã ghi nhận điểm rèn luyện thi đua cá nhân học sinh thành công!');
   };
 
+  const handleFileChange = (e) => {
+    if (e.target.files && e.target.files[0]) {
+      setSelectedFile(e.target.files[0]);
+    }
+  };
+
   const handleAssignmentSubmit = (e) => {
     e.preventDefault();
     if (!newAssignmentTitle.trim() || !newAssignmentContent.trim() || !newAssignmentDeadline) return;
@@ -287,12 +296,14 @@ export default function TeacherDashboard({ activeTab: globalActiveTab, setActive
       newAssignmentClassTarget,
       newAssignmentTitle,
       newAssignmentContent,
-      newAssignmentDeadline
+      newAssignmentDeadline,
+      selectedFile ? selectedFile.name : null
     );
     
     setNewAssignmentTitle('');
     setNewAssignmentContent('');
     setNewAssignmentDeadline('');
+    setSelectedFile(null);
     setShowCreateAssignmentModal(false);
     alert('Đã giao bài tập mới thành công!');
   };
@@ -898,6 +909,12 @@ export default function TeacherDashboard({ activeTab: globalActiveTab, setActive
                       }}>
                         {assignment.content}
                       </p>
+                      {assignment.fileName && (
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '4px', fontSize: '0.8rem', color: 'var(--accent-primary)', margin: '-6px 0 10px 0', fontWeight: 600 }}>
+                          <Paperclip size={12} />
+                          <span style={{ textOverflow: 'ellipsis', overflow: 'hidden', whiteSpace: 'nowrap', maxWidth: '240px' }}>{assignment.fileName}</span>
+                        </div>
+                      )}
                       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '0.8rem', color: 'var(--text-muted)' }}>
                         <span>Đã nộp: {completedSubs}/{totalStudentsInClass} học sinh</span>
                         <span>Ngày giao: {assignment.dateCreated}</span>
@@ -943,6 +960,24 @@ export default function TeacherDashboard({ activeTab: globalActiveTab, setActive
                       }}>
                         {assignment.content}
                       </div>
+                      {assignment.fileName && (
+                        <div style={{ 
+                          display: 'inline-flex', 
+                          alignItems: 'center', 
+                          gap: '8px', 
+                          marginTop: '12px', 
+                          padding: '8px 12px', 
+                          background: 'rgba(99, 102, 241, 0.08)', 
+                          border: '1px solid rgba(99, 102, 241, 0.2)', 
+                          borderRadius: '8px',
+                          fontSize: '0.85rem',
+                          color: 'var(--accent-primary)',
+                          fontWeight: 600
+                        }}>
+                          <Paperclip size={14} />
+                          <span>Tệp đính kèm: <strong style={{ textDecoration: 'underline', cursor: 'pointer' }}>{assignment.fileName}</strong></span>
+                        </div>
+                      )}
                     </div>
 
                     <h4 style={{ marginBottom: '12px', fontSize: '1rem', fontWeight: 700 }}>Danh sách bài nộp của lớp</h4>
@@ -1183,18 +1218,22 @@ export default function TeacherDashboard({ activeTab: globalActiveTab, setActive
 
       {/* Create Assignment Modal */}
       {showCreateAssignmentModal && (
-        <div className="modal-overlay">
-          <div className="modal-content animate-fade" style={{ maxWidth: '600px' }}>
+        <div className="modal-overlay" style={{ zIndex: 1000 }}>
+          <div className="modal-content animate-fade" style={{ maxWidth: '600px', background: '#1e1e24', color: '#f8fafc', borderColor: 'rgba(255, 255, 255, 0.1)' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
-              <h2 style={{ margin: 0, fontSize: '1.25rem' }}>Giao Bài Tập Về Nhà Mới</h2>
-              <button onClick={() => setShowCreateAssignmentModal(false)} className="btn-close" style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-primary)', padding: 0 }}>
+              <h2 style={{ margin: 0, fontSize: '1.25rem', color: '#f8fafc', fontWeight: 'bold' }}>Giao Bài Tập Về Nhà Mới</h2>
+              <button 
+                type="button"
+                onClick={() => setShowCreateAssignmentModal(false)} 
+                style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#94a3b8', padding: 0 }}
+              >
                 <X size={20} />
               </button>
             </div>
             
             <form onSubmit={handleAssignmentSubmit}>
               <div className="form-group">
-                <label className="form-label">Tiêu đề bài tập</label>
+                <label className="form-label" style={{ color: '#cbd5e1' }}>Tiêu đề bài tập</label>
                 <input 
                   type="text" 
                   className="form-control" 
@@ -1202,16 +1241,18 @@ export default function TeacherDashboard({ activeTab: globalActiveTab, setActive
                   onChange={e => setNewAssignmentTitle(e.target.value)} 
                   placeholder="Ví dụ: Ôn tập hàm số chuyên đề cực trị..."
                   required 
+                  style={{ background: '#27272a', borderColor: '#52525b', color: '#ffffff' }}
                 />
               </div>
 
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
                 <div className="form-group">
-                  <label className="form-label">Lớp học mục tiêu</label>
+                  <label className="form-label" style={{ color: '#cbd5e1' }}>Lớp học mục tiêu</label>
                   <select 
                     className="form-control"
                     value={newAssignmentClassTarget}
                     onChange={e => setNewAssignmentClassTarget(e.target.value)}
+                    style={{ background: '#27272a', borderColor: '#52525b', color: '#ffffff' }}
                   >
                     <option value="12A1">Lớp 12A1 (Sĩ số: {students.filter(s => s.class === '12A1').length})</option>
                     <option value="12A2">Lớp 12A2 (Sĩ số: {students.filter(s => s.class === '12A2').length})</option>
@@ -1220,33 +1261,80 @@ export default function TeacherDashboard({ activeTab: globalActiveTab, setActive
                   </select>
                 </div>
                 <div className="form-group">
-                  <label className="form-label">Hạn nộp bài</label>
+                  <label className="form-label" style={{ color: '#cbd5e1' }}>Hạn nộp bài</label>
                   <input 
                     type="date" 
                     className="form-control" 
                     value={newAssignmentDeadline}
                     onChange={e => setNewAssignmentDeadline(e.target.value)}
                     required 
+                    style={{ background: '#27272a', borderColor: '#52525b', color: '#ffffff' }}
                   />
                 </div>
               </div>
 
               <div className="form-group">
-                <label className="form-label">Nội dung đề bài & Yêu cầu chi tiết</label>
+                <label className="form-label" style={{ color: '#cbd5e1' }}>Nội dung đề bài & Yêu cầu chi tiết</label>
                 <textarea 
                   className="form-control" 
-                  rows="6"
+                  rows="5"
                   value={newAssignmentContent}
                   onChange={e => setNewAssignmentContent(e.target.value)}
-                  placeholder="Nhập nội dung bài tập, đường dẫn tài liệu đính kèm, các yêu cầu trình bày cụ thể..."
-                  style={{ resize: 'vertical' }}
+                  placeholder="Nhập nội dung bài tập, các yêu cầu trình bày cụ thể..."
+                  style={{ resize: 'vertical', background: '#27272a', borderColor: '#52525b', color: '#ffffff' }}
                   required
                 />
               </div>
 
+              {/* File Attachment Form Group */}
+              <div className="form-group" style={{ marginBottom: '20px' }}>
+                <label className="form-label" style={{ color: '#cbd5e1' }}>Đính kèm tệp tài liệu (Đề bài, tài liệu...)</label>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                  <label 
+                    htmlFor="file-upload" 
+                    className="btn"
+                    style={{ 
+                      display: 'flex', 
+                      alignItems: 'center', 
+                      gap: '8px', 
+                      margin: 0, 
+                      cursor: 'pointer',
+                      background: '#3f3f46', 
+                      border: '1px solid #52525b', 
+                      color: '#ffffff',
+                      padding: '10px 16px',
+                      fontSize: '0.85rem',
+                      fontWeight: 700
+                    }}
+                  >
+                    <Upload size={16} />
+                    <span>Chọn tệp tin...</span>
+                  </label>
+                  <input 
+                    id="file-upload"
+                    type="file" 
+                    onChange={handleFileChange}
+                    style={{ display: 'none' }}
+                  />
+                  <span style={{ fontSize: '0.85rem', color: selectedFile ? '#f1f5f9' : '#94a3b8', textOverflow: 'ellipsis', overflow: 'hidden', whiteSpace: 'nowrap', maxWidth: '280px' }}>
+                    {selectedFile ? selectedFile.name : 'Chưa có tệp nào được chọn'}
+                  </span>
+                  {selectedFile && (
+                    <button 
+                      type="button" 
+                      onClick={() => setSelectedFile(null)} 
+                      style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#ef4444', padding: '4px', display: 'flex', alignItems: 'center' }}
+                      title="Xóa tệp đính kèm"
+                    >
+                      <X size={16} />
+                    </button>
+                  )}
+                </div>
+              </div>
+
               <div style={{ display: 'flex', gap: '12px', marginTop: '24px' }}>
-                <button type="button" onClick={() => setShowCreateAssignmentModal(false)} className="btn btn-secondary" style={{ flex: 1 }}>Hủy</button>
-                <button type="submit" className="btn btn-primary" style={{ flex: 1 }}>Giao bài tập</button>
+                <button type="button" onClick={() => { setShowCreateAssignmentModal(false); setSelectedFile(null); }} className="btn btn-secondary" style={{ flex: 1, background: '#3f3f46', border: '1px solid #52525b', color: '#ffffff' }}>Hủy</button>
+                <button type="submit" className="btn btn-primary" style={{ flex: 1, fontWeight: 700 }}>Giao bài tập</button>
               </div>
             </form>
           </div>

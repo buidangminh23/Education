@@ -1341,7 +1341,7 @@ export const AppProvider = ({ children }) => {
     ]);
   };
 
-  const createAssignment = (teacherId, teacherName, subject, classTarget, title, content, deadline) => {
+  const createAssignment = (teacherId, teacherName, subject, classTarget, title, content, deadline, fileName = null) => {
     setAssignments(prev => [
       ...prev,
       {
@@ -1353,6 +1353,7 @@ export const AppProvider = ({ children }) => {
         title,
         content,
         deadline,
+        fileName,
         dateCreated: new Date().toISOString().split('T')[0]
       }
     ]);

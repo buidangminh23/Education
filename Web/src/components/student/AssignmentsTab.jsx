@@ -1,5 +1,6 @@
 import { useState, useContext } from 'react';
 import { AppContext } from '../../context/AppContext';
+import { Paperclip } from 'lucide-react';
 
 export default function AssignmentsTab({ student }) {
   const { assignments, submissions: allSubmissions, submitAssignment } = useContext(AppContext);
@@ -79,6 +80,25 @@ export default function AssignmentsTab({ student }) {
                   }}>
                     {assignment.content}
                   </p>
+
+                  {assignment.fileName && (
+                    <div style={{ 
+                      display: 'inline-flex', 
+                      alignItems: 'center', 
+                      gap: '8px', 
+                      marginBottom: '16px', 
+                      padding: '8px 12px', 
+                      background: 'rgba(99, 102, 241, 0.05)', 
+                      border: '1px solid rgba(99, 102, 241, 0.15)', 
+                      borderRadius: '8px',
+                      fontSize: '0.85rem',
+                      color: 'var(--accent-primary)',
+                      fontWeight: 600
+                    }}>
+                      <Paperclip size={14} />
+                      <span>Tệp đính kèm: <strong style={{ textDecoration: 'underline', cursor: 'pointer' }}>{assignment.fileName}</strong></span>
+                    </div>
+                  )}
 
                   {/* Submission status & Details */}
                   {isGraded ? (
