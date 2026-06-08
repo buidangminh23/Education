@@ -3,6 +3,7 @@ import { AppContext } from './context/AppContext';
 import Sidebar from './components/Sidebar';
 import Navbar from './components/Navbar';
 import Login from './components/Login';
+import LandingPage from './components/LandingPage';
 import { ShieldCheck, Mail, Phone, Trophy } from 'lucide-react';
 
 const PrincipalDashboard = lazy(() => import('./components/PrincipalDashboard'));
@@ -33,10 +34,17 @@ const EssayGrader = lazy(() => import('./components/EssayGrader'));
 const BusTracker = lazy(() => import('./components/BusTracker'));
 const PortfolioBuilder = lazy(() => import('./components/PortfolioBuilder'));
 const TimetableGenerator = lazy(() => import('./components/TimetableGenerator'));
+const DutySchedule = lazy(() => import('./components/DutySchedule'));
+const SeatingChart = lazy(() => import('./components/SeatingChart'));
+const ClassVoting = lazy(() => import('./components/ClassVoting'));
+const AIRiskAnalysis = lazy(() => import('./components/AIRiskAnalysis'));
+const ClassComparison = lazy(() => import('./components/ClassComparison'));
+const SchoolGallery = lazy(() => import('./components/SchoolGallery'));
 
 function App() {
   const { currentRole, userSession } = useContext(AppContext);
   const [activeTab, setActiveTab] = useState('dashboard');
+  const [showLogin, setShowLogin] = useState(false);
 
   // Reset tab on role switch
   useEffect(() => {
@@ -46,9 +54,12 @@ function App() {
     return () => clearTimeout(timer);
   }, [currentRole]);
 
-  // If no active session, render the beautiful Login Portal
+  // If no active session, render the LandingPage or Login Portal
   if (!userSession) {
-    return <Login />;
+    if (showLogin) {
+      return <Login onBack={() => setShowLogin(false)} />;
+    }
+    return <LandingPage onLogin={() => setShowLogin(true)} />;
   }
 
   // Main page content router
@@ -92,6 +103,18 @@ function App() {
           return <AdminTeacherManager />;
         case 'journal':
           return <ClassJournal />;
+        case 'duty_schedule':
+          return <DutySchedule />;
+        case 'seating_chart':
+          return <SeatingChart />;
+        case 'class_voting':
+          return <ClassVoting />;
+        case 'ai_risk':
+          return <AIRiskAnalysis />;
+        case 'class_comparison':
+          return <ClassComparison />;
+        case 'school_gallery':
+          return <SchoolGallery />;
         case 'bulletin':
           return <BulletinBoard />;
         case 'exam_repository':
@@ -112,6 +135,16 @@ function App() {
           return <TeacherDashboard activeTab={activeTab} setActiveTab={setActiveTab} />;
         case 'journal':
           return <ClassJournal />;
+        case 'duty_schedule':
+          return <DutySchedule />;
+        case 'seating_chart':
+          return <SeatingChart />;
+        case 'class_voting':
+          return <ClassVoting />;
+        case 'ai_risk':
+          return <AIRiskAnalysis />;
+        case 'school_gallery':
+          return <SchoolGallery />;
         case 'qas':
           return <TeacherDashboard activeTab={activeTab} setActiveTab={setActiveTab} />;
         case 'meet':
@@ -138,6 +171,8 @@ function App() {
       switch (activeTab) {
         case 'dashboard':
           return <StudentDashboard setActiveTab={setActiveTab} />;
+        case 'school_gallery':
+          return <SchoolGallery />;
         case 'lectures':
           return <VideoLectures />;
         case 'tutor':
@@ -160,6 +195,8 @@ function App() {
       switch (activeTab) {
         case 'chat':
           return <DirectChat />;
+        case 'school_gallery':
+          return <SchoolGallery />;
         case 'meeting_booking':
           return <MeetingBooking />;
         case 'bulletin':

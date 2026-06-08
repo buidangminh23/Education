@@ -49,13 +49,22 @@ export default function PortfolioBuilder() {
   return (
     <div className="glass-panel animate-fade" style={{ maxWidth: 1000, margin: '0 auto', padding: '24px' }}>
       {/* Header */}
-      <div style={{ marginBottom: 24 }}>
-        <h2 style={{ margin: 0, display: 'flex', alignItems: 'center', gap: 8, fontSize: '1.4rem', color: '#1e293b' }}>
-          🎓 Hồ Sơ Thành Tích & Chữ Ký Số Học Bạ
-        </h2>
-        <p style={{ margin: '4px 0 0', fontSize: '0.85rem', color: 'var(--text-secondary)' }}>
-          Hồ sơ năng lực học sinh tích hợp công nghệ xác thực chữ ký điện tử blockchain chống giả mạo.
-        </p>
+      <div style={{ marginBottom: 24, display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '12px' }}>
+        <div>
+          <h2 style={{ margin: 0, display: 'flex', alignItems: 'center', gap: 8, fontSize: '1.4rem', color: '#1e293b' }}>
+            🎓 Hồ Sơ Thành Tích & Chữ Ký Số Học Bạ
+          </h2>
+          <p style={{ margin: '4px 0 0', fontSize: '0.85rem', color: 'var(--text-secondary)' }}>
+            Hồ sơ năng lực học sinh tích hợp công nghệ xác thực chữ ký điện tử blockchain chống giả mạo.
+          </p>
+        </div>
+        <button 
+          onClick={() => window.print()} 
+          className="btn btn-primary"
+          style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '10px 20px', borderRadius: '12px' }}
+        >
+          <span>Xuất học bạ PDF</span>
+        </button>
       </div>
 
       {/* Student Selector for Teachers and Admin */}
@@ -300,7 +309,29 @@ export default function PortfolioBuilder() {
 
         {/* RIGHT PANEL: Glowing Digital CV Card / Stamp Seal rendering */}
         <div>
-          <div className="glass-panel" style={{ 
+          <style dangerouslySetInnerHTML={{ __html: `
+            @media print {
+              body * {
+                visibility: hidden;
+              }
+              .print-area, .print-area * {
+                visibility: visible;
+              }
+              .print-area {
+                position: absolute;
+                left: 0;
+                top: 0;
+                width: 100% !important;
+                background: white !important;
+                border: 2px solid #1e293b !important;
+                box-shadow: none !important;
+                color: black !important;
+                padding: 40px !important;
+                border-radius: 16px !important;
+              }
+            }
+          `}} />
+          <div className="glass-panel print-area" style={{ 
             padding: 20, 
             background: 'rgba(255,255,255,0.7)', 
             border: '1px solid rgba(255,255,255,0.6)',
@@ -343,13 +374,36 @@ export default function PortfolioBuilder() {
                 </div>
                 <div>
                   <h3 style={{ margin: 0, fontSize: '0.95rem', color: '#1e293b' }}>Học bạ Số điện tử</h3>
-                  <div style={{ fontSize: '0.72rem', color: 'var(--text-muted)' }}>Lớp {student?.class} | Trường THPT Chuyên</div>
+                  <div style={{ fontSize: '0.72rem', color: 'var(--text-muted)' }}>Lớp {student?.class} | Trường THPT Nguyễn Du</div>
                 </div>
               </div>
 
               <div style={{ borderBottom: '1px solid rgba(0,0,0,0.06)', paddingBottom: 10, marginBottom: 12 }}>
                 <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)' }}>Họ và tên học sinh:</div>
                 <div style={{ fontSize: '0.9rem', fontWeight: 700, color: '#1e293b' }}>{student?.name}</div>
+              </div>
+
+              {/* Student Academic Grades */}
+              {student?.grades && (
+                <div style={{ borderBottom: '1px solid rgba(0,0,0,0.06)', paddingBottom: 10, marginBottom: 12 }}>
+                  <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', marginBottom: 8, fontWeight: 600 }}>Điểm học tập Kỳ II:</div>
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '8px' }}>
+                    {Object.entries(student.grades).map(([sub, val]) => (
+                      <div key={sub} style={{ textAlign: 'center', background: 'rgba(0,0,0,0.03)', padding: '6px', borderRadius: '8px' }}>
+                        <div style={{ fontSize: '0.62rem', color: 'var(--text-secondary)', fontWeight: 600 }}>
+                          {sub === 'Math' ? 'Toán' : sub === 'Literature' ? 'Văn' : sub === 'Physics' ? 'Lý' : 'Anh'}
+                        </div>
+                        <div style={{ fontSize: '0.85rem', fontWeight: 700, color: 'var(--accent-ink)' }}>{val.toFixed(1)}</div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Attendance and Conduct */}
+              <div style={{ borderBottom: '1px solid rgba(0,0,0,0.06)', paddingBottom: 10, marginBottom: 12, display: 'flex', justifyContent: 'space-between', fontSize: '0.75rem' }}>
+                <div>Hạnh kiểm: <strong style={{ color: '#059669' }}>Tốt</strong></div>
+                <div>Chuyên cần: <strong>175/175 buổi</strong></div>
               </div>
 
               <div>

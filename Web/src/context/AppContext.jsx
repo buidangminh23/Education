@@ -541,11 +541,161 @@ const initialTeacherAvailability = [
   { teacherId: 'T04', teacherName: 'Lê Thu Hà', busySlots: [{ dayOfWeek: 'Thứ 5', period: 4 }] }
 ];
 
+// ── NEW FEATURES MOCK DATA ──────────────────────────────────────────────────
+const initialDutySchedule = [
+  { id: 'D01', day: 'Thứ Hai', shift: 'Sáng', type: 'Trực cổng', teacherId: 'T01', teacherName: 'Nguyễn Minh Triết' },
+  { id: 'D02', day: 'Thứ Hai', shift: 'Chiều', type: 'Trực trường', teacherId: 'T02', teacherName: 'Trần Thị Hồng Vân' },
+  { id: 'D03', day: 'Thứ Ba', shift: 'Sáng', type: 'Trực cổng', teacherId: 'T03', teacherName: 'Phạm Đức Duy' },
+  { id: 'D04', day: 'Thứ Tư', shift: 'Sáng', type: 'Trực căng tin', teacherId: 'T04', teacherName: 'Lê Thu Hà' },
+  { id: 'D05', day: 'Thứ Năm', shift: 'Chiều', type: 'Trực cổng', teacherId: 'T01', teacherName: 'Nguyễn Minh Triết' },
+  { id: 'D06', day: 'Thứ Sáu', shift: 'Sáng', type: 'Trực trường', teacherId: 'T02', teacherName: 'Trần Thị Hồng Vân' },
+];
+
+const initialSeatingCharts = {
+  '12A1': [
+    { index: 0, student: { id: 'HS001', name: 'Nguyễn Hoàng Nam' } },
+    { index: 1, student: { id: 'HS002', name: 'Lê Mai Chi' } },
+    { index: 2, student: { id: 'HS003', name: 'Phan Minh Triết' } },
+  ],
+  '12A2': [],
+  '11A1': [],
+  '10A1': [],
+};
+
+const initialClassVotes = [
+  {
+    id: 'V01',
+    title: 'Bầu Lớp Trưởng Lớp 12A1',
+    class: '12A1',
+    position: 'Lớp Trưởng',
+    status: 'open',
+    deadline: '2026-06-15',
+    candidates: [
+      { id: 'C01', name: 'Nguyễn Hoàng Nam', votes: 8 },
+      { id: 'C02', name: 'Lê Mai Chi', votes: 12 },
+      { id: 'C03', name: 'Phan Minh Triết', votes: 3 },
+    ],
+    totalVoters: 35,
+    votedStudentIds: ['HS002', 'HS003']
+  },
+  {
+    id: 'V02',
+    title: 'Bầu Bí Thư Chi Đoàn 12A1',
+    class: '12A1',
+    position: 'Bí Thư Chi Đoàn',
+    status: 'closed',
+    deadline: '2026-06-01',
+    candidates: [
+      { id: 'C04', name: 'Lê Mai Chi', votes: 22 },
+      { id: 'C05', name: 'Trần Thị Hương', votes: 8 },
+    ],
+    totalVoters: 35,
+    votedStudentIds: []
+  }
+];
+
+const initialSchoolAlbums = [
+  { id: 'AL01', title: 'Lễ Khai Giảng 2025-2026', date: '2025-09-05', tag: 'Sự kiện', emoji: '🎓', photoCount: 6, color: '#4f46e5' },
+  { id: 'AL02', title: 'Hội Trại Mùa Xuân 2026', date: '2026-01-20', tag: 'Sự kiện', emoji: '⛺', photoCount: 8, color: '#059669' },
+  { id: 'AL03', title: 'Ngày Hội Hướng Nghiệp 2026', date: '2026-04-15', tag: 'Học thuật', emoji: '🎯', photoCount: 5, color: '#0891b2' },
+  { id: 'AL04', title: 'Cuộc Thi Thể Thao Học Đường', date: '2026-03-10', tag: 'Thể thao', emoji: '⚽', photoCount: 7, color: '#dc2626' },
+  { id: 'AL05', title: 'Lễ Tri Ân Thầy Cô 20/11', date: '2025-11-20', tag: 'Văn nghệ', emoji: '🌸', photoCount: 4, color: '#db2777' },
+  { id: 'AL06', title: 'CLB Robotics – Demo Day', date: '2026-05-15', tag: 'CLB', emoji: '🤖', photoCount: 6, color: '#7c3aed' },
+];
+
+const initialClassChats = {
+  rooms: [
+    { id: 'R-12A1',      name: '12A1 — Chung',      class: '12A1', subject: null,       unread: 3 },
+    { id: 'R-12A1-math', name: '12A1 — Toán học',   class: '12A1', subject: 'Toán học', unread: 0 },
+    { id: 'R-12A1-lit',  name: '12A1 — Ngữ văn',    class: '12A1', subject: 'Ngữ văn',  unread: 1 },
+    { id: 'R-12A2',      name: '12A2 — Chung',       class: '12A2', subject: null,       unread: 0 },
+  ],
+  messages: {
+    'R-12A1': [
+      { id: 'SYS-01', senderId: '__system__', senderName: '', role: 'system', text: 'Thầy Triết đã tạo phòng chat', time: '07:00', date: '2026-06-07' },
+      { id: 'M01', senderId: 'T01', senderName: 'Nguyễn Minh Triết', role: 'teacher', text: 'Chào các em! Thầy nhắc nhở: tuần này có kiểm tra 1 tiết Toán vào thứ Năm nhé.', time: '08:30', date: '2026-06-08' },
+      { id: 'M02', senderId: 'HS001', senderName: 'Nguyễn Hoàng Nam', role: 'student', text: 'Thầy ơi, đề kiểm tra có bao nhiêu câu trắc nghiệm ạ?', time: '08:35', date: '2026-06-08' },
+      { id: 'M03', senderId: 'T01', senderName: 'Nguyễn Minh Triết', role: 'teacher', text: '40 câu trắc nghiệm + 2 câu tự luận em nhé. Thầy sẽ đăng đề cương ôn tập lên hệ thống chiều nay.', time: '08:40', date: '2026-06-08' },
+      { id: 'M04', senderId: 'HS002', senderName: 'Lê Mai Chi', role: 'student', text: 'Em cảm ơn thầy! Có ai muốn lập nhóm học buổi chiều không?', time: '09:15', date: '2026-06-08' },
+      { id: 'M05', senderId: 'HS003', senderName: 'Phan Minh Triết', role: 'student', text: 'Em muốn! 3 giờ chiều ở thư viện nhé mọi người 📚', time: '09:18', date: '2026-06-08' },
+    ],
+    'R-12A1-math': [
+      { id: 'SYS-02', senderId: '__system__', senderName: '', role: 'system', text: 'Thầy Triết đã tạo phòng chat Toán học', time: '07:00', date: '2026-06-07' },
+      { id: 'M10', senderId: 'T01', senderName: 'Nguyễn Minh Triết', role: 'teacher', text: 'Phòng học Toán 12A1. Các em có thể hỏi bài ở đây nhé!', time: '07:00', date: '2026-06-07' },
+    ],
+    'R-12A1-lit': [
+      { id: 'SYS-03', senderId: '__system__', senderName: '', role: 'system', text: 'Cô Vân đã tạo phòng chat Ngữ văn', time: '13:00', date: '2026-06-07' },
+      { id: 'M20', senderId: 'T02', senderName: 'Trần Thị Hồng Vân', role: 'teacher', text: 'Cô đã đăng đề cương ôn tập Ngữ văn lên kho học liệu rồi các em nhé!', time: '14:00', date: '2026-06-08' },
+    ],
+    'R-12A2': [
+      { id: 'SYS-04', senderId: '__system__', senderName: '', role: 'system', text: 'Phòng chat 12A2 đã được tạo', time: '07:00', date: '2026-06-07' },
+    ],
+  }
+};
+
+const initialTournaments = [
+  {
+    id: 'T01',
+    title: 'Đại Chiến Toán Học — Tháng 6/2026',
+    subject: 'Toán học',
+    status: 'ongoing',
+    startDate: '2026-06-08',
+    endDate: '2026-06-15',
+    participants: [
+      { id: 'HS001', name: 'Nguyễn Hoàng Nam', score: 85 },
+      { id: 'HS002', name: 'Lê Mai Chi', score: 98 },
+      { id: 'HS003', name: 'Phan Minh Triết', score: 62 },
+      { id: 'P4', name: 'Vũ Thành Long', score: 79 },
+      { id: 'P5', name: 'Đỗ Minh Châu', score: 91 },
+      { id: 'P6', name: 'Hoàng Lan Anh', score: 74 },
+      { id: 'P7', name: 'Trần Bảo Khoa', score: 83 },
+      { id: 'P8', name: 'Nguyễn Thị Cẩm Ly', score: 76 },
+    ],
+    bracket: [
+      { 
+        round: 1, 
+        name: 'Tứ Kết',
+        matches: [
+          { id: 'M1', p1: 'Lê Mai Chi', p2: 'Vũ Thành Long', winner: 'Lê Mai Chi', score: '98-79' },
+          { id: 'M2', p1: 'Đỗ Minh Châu', p2: 'Nguyễn Thị Cẩm Ly', winner: 'Đỗ Minh Châu', score: '91-76' },
+          { id: 'M3', p1: 'Nguyễn Hoàng Nam', p2: 'Trần Bảo Khoa', winner: 'Nguyễn Hoàng Nam', score: '85-83' },
+          { id: 'M4', p1: 'Hoàng Lan Anh', p2: 'Phan Minh Triết', winner: 'Hoàng Lan Anh', score: '74-62' },
+        ]
+      },
+      { 
+        round: 2, 
+        name: 'Bán Kết',
+        matches: [
+          { id: 'M5', p1: 'Lê Mai Chi', p2: 'Đỗ Minh Châu', winner: 'Lê Mai Chi', score: '98-91' },
+          { id: 'M6', p1: 'Nguyễn Hoàng Nam', p2: 'Hoàng Lan Anh', winner: null, score: null },
+        ]
+      },
+      { 
+        round: 3, 
+        name: 'Chung Kết',
+        matches: [
+          { id: 'M7', p1: 'Lê Mai Chi', p2: '???', winner: null, score: null },
+        ]
+      },
+    ]
+  },
+  {
+    id: 'T02',
+    title: 'Quiz Vật Lý Nhanh Tay Lẹ Mắt',
+    subject: 'Vật lý',
+    status: 'upcoming',
+    startDate: '2026-06-20',
+    endDate: '2026-06-27',
+    participants: [],
+    bracket: []
+  }
+];
+
 export const AppProvider = ({ children }) => {
   // ── Database Version Auto-Reset ───────────────────────────────────────────
   // We use this version string to force clear old localStorage cached mock data
   // so that structural changes (like gradeHistory on HS001) are loaded.
-  const CURRENT_DB_VERSION = 'v1.4';
+  const CURRENT_DB_VERSION = 'v1.5';
   const savedVersion = localStorage.getItem('edu_db_version');
   if (savedVersion !== CURRENT_DB_VERSION) {
     const keysToClear = [
@@ -559,7 +709,8 @@ export const AppProvider = ({ children }) => {
       'learningResources', 'flashcards', 'careerTestScores', 'cafeteriaRegistrations', 
       'cafeteriaFeedback', 'studentWallets', 'mockExamHistory', 'customExams',
       'notifications', 'directMessages', 'bulletins', 'meetingBookings',
-      'communityExams', 'schoolAssets', 'teacherAttendance'
+      'communityExams', 'schoolAssets', 'teacherAttendance',
+      'dutySchedule', 'seatingCharts', 'classVotes', 'schoolAlbums', 'classChats', 'tournaments'
     ];
     keysToClear.forEach(key => localStorage.removeItem(key));
     localStorage.setItem('edu_db_version', CURRENT_DB_VERSION);
@@ -579,6 +730,12 @@ export const AppProvider = ({ children }) => {
 
   // Shared student sub-tab state (controlled from Sidebar)
   const [studentSubTab, setStudentSubTab] = useState('overview');
+  
+  // Shared teacher sub-tab state (controlled from Sidebar)
+  const [teacherSubTab, setTeacherSubTab] = useState('students');
+  
+  // Shared parent sub-tab state (controlled from Sidebar)
+  const [parentSubTab, setParentSubTab] = useState('grades');
   
   const [selectedStudentId, setSelectedStudentId] = useState('HS001');
 
@@ -842,6 +999,44 @@ export const AppProvider = ({ children }) => {
     const saved = localStorage.getItem('teacherAttendance');
     return saved ? JSON.parse(saved) : initialTeacherAttendance;
   });
+
+  const [dutySchedule, setDutySchedule] = useState(() => {
+    const saved = localStorage.getItem('dutySchedule');
+    return saved ? JSON.parse(saved) : initialDutySchedule;
+  });
+
+  const [seatingCharts, setSeatingCharts] = useState(() => {
+    const saved = localStorage.getItem('seatingCharts');
+    return saved ? JSON.parse(saved) : initialSeatingCharts;
+  });
+
+  const [classVotes, setClassVotes] = useState(() => {
+    const saved = localStorage.getItem('classVotes');
+    return saved ? JSON.parse(saved) : initialClassVotes;
+  });
+
+  const [schoolAlbums, setSchoolAlbums] = useState(() => {
+    const saved = localStorage.getItem('schoolAlbums');
+    return saved ? JSON.parse(saved) : initialSchoolAlbums;
+  });
+
+  const [classChats, setClassChats] = useState(() => {
+    const saved = localStorage.getItem('classChats');
+    return saved ? JSON.parse(saved) : initialClassChats;
+  });
+
+  const [tournaments, setTournaments] = useState(() => {
+    const saved = localStorage.getItem('tournaments');
+    return saved ? JSON.parse(saved) : initialTournaments;
+  });
+
+  // Sync state changes with localStorage
+  useEffect(() => { localStorage.setItem('dutySchedule', JSON.stringify(dutySchedule)); }, [dutySchedule]);
+  useEffect(() => { localStorage.setItem('seatingCharts', JSON.stringify(seatingCharts)); }, [seatingCharts]);
+  useEffect(() => { localStorage.setItem('classVotes', JSON.stringify(classVotes)); }, [classVotes]);
+  useEffect(() => { localStorage.setItem('schoolAlbums', JSON.stringify(schoolAlbums)); }, [schoolAlbums]);
+  useEffect(() => { localStorage.setItem('classChats', JSON.stringify(classChats)); }, [classChats]);
+  useEffect(() => { localStorage.setItem('tournaments', JSON.stringify(tournaments)); }, [tournaments]);
 
   // Sync html attribute for theme
   useEffect(() => {
@@ -2328,6 +2523,10 @@ export const AppProvider = ({ children }) => {
       setCurrentRole,
       studentSubTab,
       setStudentSubTab,
+      teacherSubTab,
+      setTeacherSubTab,
+      parentSubTab,
+      setParentSubTab,
       selectedStudentId,
       setSelectedStudentId,
       mockExamHistory,
@@ -2433,6 +2632,12 @@ export const AppProvider = ({ children }) => {
       communityExams, addToRepository, voteExam,
       schoolAssets, bookAsset, approveAssetBooking,
       teacherAttendance, checkInTeacher,
+      dutySchedule, setDutySchedule,
+      seatingCharts, setSeatingCharts,
+      classVotes, setClassVotes,
+      schoolAlbums, setSchoolAlbums,
+      classChats, setClassChats,
+      tournaments, setTournaments,
       processPayment,
       globalSearch,
     }}>

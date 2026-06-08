@@ -12,8 +12,12 @@ import AssignmentsTab from './student/AssignmentsTab';
 import LibraryTab from './student/LibraryTab';
 import ClubsTab from './student/ClubsTab';
 import AiAdvisorTab from './student/AiAdvisorTab';
+import StudyPlanTab from './student/StudyPlanTab';
+import ClassChatRoom from './ClassChatRoom';
+import MiniTournament from './MiniTournament';
 import OverviewTab from './student/OverviewTab';
 import CounselingTab from './student/CounselingTab';
+import UniversityMatchmakerTab from './student/UniversityMatchmakerTab';
 
 export default function StudentDashboard({ setActiveTab }) {
   const { currentRole, studentSubTab, setStudentSubTab, selectedStudentId, students } = useContext(AppContext);
@@ -37,6 +41,9 @@ export default function StudentDashboard({ setActiveTab }) {
       {subTab === 'deadlines' && <DeadlinesTab student={student} />}
       {subTab === 'mock_exams' && <MockExamTab student={student} />}
       {subTab === 'overview' && <OverviewTab student={student} setActiveTab={setActiveTab} />}
+      {subTab === 'study_plan' && <StudyPlanTab />}
+      {subTab === 'class_chat' && <ClassChatRoom />}
+      {subTab === 'tournament' && <MiniTournament />}
       {subTab === 'ai_advisor' && <AiAdvisorTab />}
       {subTab === 'attendance' && <AttendanceTab student={student} />}
       {subTab === 'conduct' && <ConductTab student={student} />}
@@ -44,6 +51,7 @@ export default function StudentDashboard({ setActiveTab }) {
       {subTab === 'library' && <LibraryTab student={student} />}
       {subTab === 'clubs' && <ClubsTab student={student} />}
       {subTab === 'counseling' && isStudent && <CounselingTab student={student} />}
+      {subTab === 'university_matchmaker' && <UniversityMatchmakerTab student={student} />}
       {subTab === 'evaluations' && <EvaluationsTab student={student} />}
       {subTab === 'cafeteria' && <CafeteriaTab student={student} />}
       {subTab === 'competency_heatmap' && <CompetencyHeatmapTab setSubTab={setSubTab} />}

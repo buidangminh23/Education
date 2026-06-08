@@ -27,22 +27,37 @@ export default function LibraryHub() {
   // Search and Category Filter
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('All');
+  const [selectedTag, setSelectedTag] = useState('Tất cả');
 
   // E-book reader state
   const [activeEbook, setActiveEbook] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [activeTicket, setActiveTicket] = useState(null);
 
-  // Filter books based on search query and category
-  const filteredBooks = (libraryBooks || []).filter(book => {
+  const getBookTags = (book) => {
+    if (book.category === 'Kỹ năng sống') return ['Đọc thêm', 'Kỹ năng'];
+    if (book.category === 'Khoa học vũ trụ') return ['Đọc thêm', 'Nâng cao', 'Khoa học'];
+    if (book.category === 'Khoa học phổ thông') return ['Cơ bản', 'Khoa học'];
+    if (book.category === 'Sách giáo khoa') return ['Bắt buộc', 'Cơ bản', 'Bộ GD'];
+    if (book.category === 'Tài liệu tham khảo') return ['Luyện thi', 'Nâng cao', 'Đề thi'];
+    return ['Đọc thêm'];
+  };
+
+  // Filter books based on search query, category, and tag
+  const filteredBooks = (libraryBooks || []).map(book => ({
+    ...book,
+    tags: getBookTags(book)
+  })).filter(book => {
     const matchesSearch = book.title.toLowerCase().includes(searchQuery.toLowerCase()) || 
                           book.author.toLowerCase().includes(searchQuery.toLowerCase());
     const matchesCategory = selectedCategory === 'All' || book.category === selectedCategory;
-    return matchesSearch && matchesCategory;
+    const matchesTag = selectedTag === 'Tất cả' || book.tags.includes(selectedTag);
+    return matchesSearch && matchesCategory && matchesTag;
   });
 
   // Unique categories list
   const categories = ['All', ...new Set((libraryBooks || []).map(b => b.category))];
+  const allTags = ['Tất cả', 'Đọc thêm', 'Kỹ năng', 'Nâng cao', 'Khoa học', 'Cơ bản', 'Bắt buộc', 'Bộ GD', 'Luyện thi', 'Đề thi'];
 
   // Reserve a book
   const handleReserve = (bookId) => {
@@ -139,26 +154,51 @@ export default function LibraryHub() {
           {/* Catalog Left */}
           <div>
             {/* Filter Bar */}
-            <div style={{ display: 'flex', gap: 10, marginBottom: 16, flexWrap: 'wrap' }}>
-              <div style={{ flex: 1, position: 'relative', minWidth: 200 }}>
-                <input 
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 12, marginBottom: 16 }}>
+              <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
+                <div style={{ flex: 1, position: 'relative', minWidth: 200 }}>
+                  <input 
+                    className="form-control" 
+                    value={searchQuery}
+                    onChange={e => setSearchQuery(e.target.value)}
+                    placeholder="Tìm tên sách, tác giả..." 
+                    style={{ fontSize: '0.82rem', paddingLeft: 36, borderRadius: 12 }} 
+                  />
+                  <Search size={16} color="var(--text-muted)" style={{ position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)' }} />
+                </div>
+                <select 
                   className="form-control" 
-                  value={searchQuery}
-                  onChange={e => setSearchQuery(e.target.value)}
-                  placeholder="Tìm tên sách, tác giả..." 
-                  style={{ fontSize: '0.82rem', paddingLeft: 36, borderRadius: 12 }} 
-                />
-                <Search size={16} color="var(--text-muted)" style={{ position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)' }} />
+                  value={selectedCategory} 
+                  onChange={e => setSelectedCategory(e.target.value)}
+                  style={{ width: 150, fontSize: '0.82rem', borderRadius: 12, padding: '8px' }}>
+                  {categories.map(cat => (
+                    <option key={cat} value={cat}>{cat === 'All' ? 'Tất cả thể loại' : cat}</option>
+                  ))}
+                </select>
               </div>
-              <select 
-                className="form-control" 
-                value={selectedCategory} 
-                onChange={e => setSelectedCategory(e.target.value)}
-                style={{ width: 150, fontSize: '0.82rem', borderRadius: 12, padding: '8px' }}>
-                {categories.map(cat => (
-                  <option key={cat} value={cat}>{cat === 'All' ? 'Tất cả thể loại' : cat}</option>
+
+              {/* Tag filtering pills */}
+              <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', paddingBottom: '4px', overflowX: 'auto' }}>
+                {allTags.map(tag => (
+                  <button
+                    key={tag}
+                    onClick={() => setSelectedTag(tag)}
+                    style={{
+                      padding: '4px 10px',
+                      fontSize: '0.72rem',
+                      fontWeight: 600,
+                      borderRadius: '8px',
+                      border: '1px solid rgba(79, 70, 229, 0.15)',
+                      cursor: 'pointer',
+                      background: selectedTag === tag ? 'var(--accent)' : 'rgba(255,255,255,0.6)',
+                      color: selectedTag === tag ? '#fff' : 'var(--accent-ink)',
+                      transition: 'all 0.15s ease'
+                    }}
+                  >
+                    {tag === 'Tất cả' ? 'Tất cả thẻ' : `#${tag}`}
+                  </button>
                 ))}
-              </select>
+              </div>
             </div>
 
             {/* Book Cards Grid */}
@@ -178,6 +218,14 @@ export default function LibraryHub() {
                       <div>
                         <strong style={{ fontSize: '0.88rem', display: 'block', color: '#1e293b' }}>{book.title}</strong>
                         <span style={{ fontSize: '0.75rem', color: 'var(--text-secondary)' }}>Tác giả: {book.author} | Thể loại: {book.category}</span>
+                        {/* Book tags list */}
+                        <div style={{ display: 'flex', gap: 4, marginTop: 4, flexWrap: 'wrap' }}>
+                          {book.tags.map(t => (
+                            <span key={t} style={{ fontSize: '0.62rem', background: 'var(--accent-soft)', color: 'var(--accent-ink)', padding: '2px 6px', borderRadius: '4px', fontWeight: 600 }}>
+                              #{t}
+                            </span>
+                          ))}
+                        </div>
                       </div>
                     </div>
 

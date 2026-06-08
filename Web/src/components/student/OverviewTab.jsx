@@ -1,5 +1,6 @@
 import { useContext } from 'react';
 import { AppContext } from '../../context/AppContext';
+import StreakWidget from './StreakWidget';
 import {
   Plus, Star, Trophy, CheckCircle, Heart, Calendar,
   ChevronRight, BookOpen, BarChart3, ClipboardList, Clock, Bell, TrendingUp
@@ -183,6 +184,7 @@ export default function OverviewTab({ student, setActiveTab }) {
 
         {/* Right */}
         <div className="col" style={{ gap: 20 }}>
+          <StreakWidget />
           {/* Assignments */}
           <SectionCard title="Bài tập sắp đến hạn" icon={ClipboardList} delay="d3">
             <div className="col" style={{ gap: 8 }}>

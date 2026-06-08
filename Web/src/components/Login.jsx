@@ -1,6 +1,6 @@
 import { useState, useContext } from 'react';
 import { AppContext } from '../context/AppContext';
-import { Shield, GraduationCap, User, Users, Key, ArrowRight } from 'lucide-react';
+import { Shield, GraduationCap, User, Users, Key, ArrowRight, ArrowLeft } from 'lucide-react';
 
 const ROLES = [
   { id: 'student', label: 'Học sinh', sub: 'Lớp & điểm số', icon: User, color: 'blue' },
@@ -16,7 +16,7 @@ const QUICK_CREDS = {
   parent: { username: 'phuhuynh_nam', password: atob('cGFyZW50MTIz') },
 };
 
-export default function Login() {
+export default function Login({ onBack }) {
   const { setCurrentRole } = useContext(AppContext);
   const [role, setRole] = useState('student');
   const [username, setUsername] = useState(QUICK_CREDS.student.username);
@@ -95,6 +95,26 @@ export default function Login() {
       {/* Form side */}
       <div className="login-form-side" data-role={role}>
         <div className="login-card animate-pop">
+          {onBack && (
+            <button
+              onClick={onBack}
+              style={{
+                background: 'transparent',
+                border: 'none',
+                color: 'var(--muted-c, #64748b)',
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                gap: 6,
+                fontSize: '0.88rem',
+                fontWeight: 600,
+                marginBottom: 16,
+                padding: 0
+              }}
+            >
+              <ArrowLeft size={16} /> Quay lại trang chủ
+            </button>
+          )}
           <h1 className="display" style={{ fontSize: '2rem' }}>Chào mừng trở lại 👋</h1>
           <p className="soft" style={{ marginTop: 8, marginBottom: 22 }}>Chọn vai trò và đăng nhập để tiếp tục.</p>
 

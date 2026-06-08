@@ -20,6 +20,7 @@ import {
   Paperclip
 } from 'lucide-react';
 import TeacherOverview from './dash/TeacherOverview';
+import AiLessonPlannerTab from './teacher/AiLessonPlannerTab';
 
 
 export default function TeacherDashboard({ activeTab: globalActiveTab, setActiveTab: setGlobalActiveTab }) {
@@ -47,33 +48,17 @@ export default function TeacherDashboard({ activeTab: globalActiveTab, setActive
     teachers,
     teacherLeaveRequests,
     submitTeacherLeaveRequest,
-    userSession
+    userSession,
+    teacherSubTab,
+    setTeacherSubTab
   } = useContext(AppContext);
 
-  const [activeTab, setActiveTab] = useState('students'); // students, qa, leaves, lesson_plans, conduct, assignments, teacher_leaves
-  
-  // Sync with global activeTab (sidebar selection)
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      if (globalActiveTab === 'dashboard') {
-        setActiveTab('students');
-      } else if (globalActiveTab === 'qas') {
-        setActiveTab('qa');
-      }
-    }, 0);
-    return () => clearTimeout(timer);
-  }, [globalActiveTab]);
+  const activeTab = teacherSubTab || 'students';
 
   const handleSubTabChange = (tab) => {
-    setActiveTab(tab);
+    setTeacherSubTab(tab);
     if (setGlobalActiveTab) {
-      if (tab === 'students') {
-        setGlobalActiveTab('dashboard');
-      } else if (tab === 'qa') {
-        setGlobalActiveTab('qas');
-      } else {
-        setGlobalActiveTab('dashboard');
-      }
+      setGlobalActiveTab('dashboard');
     }
   };
 
@@ -123,6 +108,31 @@ export default function TeacherDashboard({ activeTab: globalActiveTab, setActive
   const [newExamBlock, setNewExamBlock] = useState('A00');
   const [newExamDuration, setNewExamDuration] = useState(45);
   const [newExamQuestions, setNewExamQuestions] = useState([]);
+  const [generatedComment, setGeneratedComment] = useState('');
+
+  const handleGenerateComment = () => {
+    if (!selectedStudent) return;
+    const m = gradesInput.Math;
+    const l = gradesInput.Literature;
+    const p = gradesInput.Physics;
+    const e = gradesInput.English;
+    const avg = (m + l + p + e) / 4;
+    const logs = conductLogs ? conductLogs.filter(cl => cl.studentId === selectedStudent.id) : [];
+    const conductScore = 100 + logs.reduce((sum, curr) => sum + curr.points, 0);
+    const conduct = conductScore >= 90 ? 'Tốt' : conductScore >= 70 ? 'Khá' : 'Trung bình';
+
+    let commentText = '';
+    if (avg >= 8.5 && conduct === 'Tốt') {
+      commentText = `Học sinh ${selectedStudent.name} học lực giỏi toàn diện, tích cực xây dựng bài, đặc biệt xuất sắc ở các môn học tự nhiên. Ý thức thi đua rất tốt, gương mẫu trong học tập và rèn luyện.`;
+    } else if (avg >= 8.0 && conduct === 'Tốt') {
+      commentText = `Học sinh ${selectedStudent.name} có học lực Giỏi, tiếp thu bài nhanh, chăm ngoan. Chấp hành nghiêm chỉnh nội quy nhà trường và nề nếp thi đua của lớp.`;
+    } else if (avg >= 6.5 && conduct !== 'Yếu') {
+      commentText = `Học sinh ${selectedStudent.name} có học lực Khá, tiếp thu bài ổn định. Cần rèn luyện thêm tính kiên trì ở các môn tự nhiên. Hạnh kiểm ngoan ngoãn, lễ phép với thầy cô.`;
+    } else {
+      commentText = `Học sinh ${selectedStudent.name} học lực trung bình, còn hổng kiến thức căn bản ở một số môn. Cần tăng cường học nhóm và chú ý nghe giảng. Cần cố gắng rèn nề nếp thêm.`;
+    }
+    setGeneratedComment(commentText);
+  };
 
   const createBlankQuestion = (subj = 'Math') => ({
     id: 'Q_' + Date.now() + '_' + Math.floor(Math.random() * 1000),
@@ -322,40 +332,6 @@ export default function TeacherDashboard({ activeTab: globalActiveTab, setActive
 
   return (
     <div className="animate-fade">
-      {/* Sub Tabs */}
-      <div className="tabs-container" style={{ overflowX: 'auto', display: 'flex', flexWrap: 'nowrap', gap: '4px', paddingBottom: '6px' }} className="custom-scroll">
-        <button onClick={() => handleSubTabChange('students')} className={`tab-btn ${activeTab === 'students' ? 'active' : ''}`} style={{ whiteSpace: 'nowrap' }}>
-          Học Sinh & Điểm Số ({classStudents.length})
-        </button>
-        <button onClick={() => handleSubTabChange('attendance')} className={`tab-btn ${activeTab === 'attendance' ? 'active' : ''}`} style={{ whiteSpace: 'nowrap' }}>
-          Điểm Danh Lớp
-        </button>
-        <button onClick={() => handleSubTabChange('resources')} className={`tab-btn ${activeTab === 'resources' ? 'active' : ''}`} style={{ whiteSpace: 'nowrap' }}>
-          Học Liệu Bài Giảng
-        </button>
-        <button onClick={() => handleSubTabChange('qa')} className={`tab-btn ${activeTab === 'qa' ? 'active' : ''}`} style={{ whiteSpace: 'nowrap' }}>
-          Hỏi Đáp Phụ Huynh ({parentQAs.filter(q => q.status === 'pending').length})
-        </button>
-        <button onClick={() => handleSubTabChange('leaves')} className={`tab-btn ${activeTab === 'leaves' ? 'active' : ''}`} style={{ whiteSpace: 'nowrap' }}>
-          Duyệt Nghỉ Phép ({classLeaves.filter(l => l.status === 'pending').length})
-        </button>
-        <button onClick={() => handleSubTabChange('teacher_leaves')} className={`tab-btn ${activeTab === 'teacher_leaves' ? 'active' : ''}`} style={{ whiteSpace: 'nowrap' }}>
-          Nghỉ Phép & Dạy Thay {myCoverSchedules.length > 0 && `(${myCoverSchedules.length})`}
-        </button>
-        <button onClick={() => handleSubTabChange('lesson_plans')} className={`tab-btn ${activeTab === 'lesson_plans' ? 'active' : ''}`} style={{ whiteSpace: 'nowrap' }}>
-          Kế Hoạch Giáo Án ({myLessonPlans.length})
-        </button>
-        <button onClick={() => handleSubTabChange('conduct')} className={`tab-btn ${activeTab === 'conduct' ? 'active' : ''}`} style={{ whiteSpace: 'nowrap' }}>
-          Điểm Rèn Luyện Lớp ({classStudents.length})
-        </button>
-        <button onClick={() => handleSubTabChange('assignments')} className={`tab-btn ${activeTab === 'assignments' ? 'active' : ''}`} style={{ whiteSpace: 'nowrap' }}>
-          Giao Bài Tập
-        </button>
-        <button onClick={() => handleSubTabChange('mock_exams')} className={`tab-btn ${activeTab === 'mock_exams' ? 'active' : ''}`} style={{ whiteSpace: 'nowrap' }}>
-          Điểm Thi Thử Lớp
-        </button>
-      </div>
-
       {/* Content Panes */}
       {activeTab === 'students' && (
         <TeacherOverview 
@@ -765,6 +741,10 @@ export default function TeacherDashboard({ activeTab: globalActiveTab, setActive
             </div>
           </div>
         </div>
+      )}
+
+      {activeTab === 'ai_planner' && (
+        <AiLessonPlannerTab />
       )}
 
       {activeTab === 'conduct' && (
@@ -1919,6 +1899,7 @@ export default function TeacherDashboard({ activeTab: globalActiveTab, setActive
                           type="button"
                           onClick={() => {
                             setSelectedStudent(std);
+                            setGeneratedComment('');
                             setGradesInput({
                               Math: std.grades.Math || 0,
                               Literature: std.grades.Literature || 0,
@@ -2014,6 +1995,40 @@ export default function TeacherDashboard({ activeTab: globalActiveTab, setActive
                   required 
                   style={{ background: '#27272a', borderColor: '#52525b', color: '#ffffff' }}
                 />
+              </div>
+
+              {/* AI Auto Comment Section */}
+              <div style={{ marginTop: '16px', borderTop: '1px solid rgba(255, 255, 255, 0.1)', paddingTop: '16px' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
+                  <label className="form-label" style={{ color: '#cbd5e1', margin: 0 }}>AI Gợi ý nhận xét học bạ</label>
+                  <button 
+                    type="button" 
+                    onClick={handleGenerateComment} 
+                    className="btn btn-secondary btn-sm"
+                    style={{ padding: '4px 10px', fontSize: '0.75rem', background: 'var(--accent)', border: 'none', color: '#fff' }}
+                  >
+                    Sinh nhận xét AI
+                  </button>
+                </div>
+                <textarea 
+                  className="form-control" 
+                  value={generatedComment}
+                  onChange={e => setGeneratedComment(e.target.value)}
+                  placeholder="Bấm nút 'Sinh nhận xét AI' để hệ thống tự động soạn thảo nhận xét..." 
+                  style={{ minHeight: '80px', background: '#27272a', borderColor: '#52525b', color: '#ffffff', fontSize: '0.85rem', lineHeight: 1.4 }}
+                />
+                {generatedComment && (
+                  <button 
+                    type="button"
+                    onClick={() => {
+                      navigator.clipboard.writeText(generatedComment);
+                      alert('Đã sao chép nhận xét vào bộ nhớ đệm!');
+                    }}
+                    style={{ marginTop: '6px', background: 'transparent', border: 'none', color: '#38bdf8', fontSize: '0.75rem', cursor: 'pointer', padding: 0 }}
+                  >
+                    📋 Sao chép nhận xét
+                  </button>
+                )}
               </div>
               
               <div style={{ display: 'flex', gap: '12px', marginTop: '24px' }}>

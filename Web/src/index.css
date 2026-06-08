@@ -289,3 +289,32 @@ h1 {
   background: var(--accent-primary);
   box-shadow: var(--shadow-neon);
 }
+
+/* Print Media Styles */
+@media print {
+  body {
+    background: white !important;
+    color: black !important;
+  }
+  .no-print, 
+  .sidebar, 
+  .navbar, 
+  .tabs-container {
+    display: none !important;
+  }
+  .main-content {
+    padding-left: 0 !important;
+  }
+  .content-pane {
+    padding: 0 !important;
+    max-width: 100% !important;
+  }
+  .glass-panel {
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+    backdrop-filter: none !important;
+    padding: 0 !important;
+  }
+}
+

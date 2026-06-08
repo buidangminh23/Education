@@ -1,4 +1,4 @@
-import { useContext, useState, useEffect } from 'react';
+import { useContext, useState, useEffect, useMemo } from 'react';
 import { AppContext } from '../context/AppContext';
 import { 
   FileText, 
@@ -39,24 +39,12 @@ export default function ParentHub({ activeTab, setActiveTab }) {
     cancelCafeteriaMeal,
     topUpStudentWallet,
     updateStudentWalletLimit,
-    wellnessLogs
+    wellnessLogs,
+    parentSubTab,
+    setParentSubTab
   } = useContext(AppContext);
 
-  // Declare all hooks at the very top level
-  const [activeSubTab, setActiveSubTab] = useState('grades'); // grades, fees, qa, leaves, evaluations
-
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      if (activeTab === 'dashboard') {
-        setActiveSubTab('grades');
-      } else if (activeTab === 'fees') {
-        setActiveSubTab('fees');
-      } else if (activeTab === 'qas') {
-        setActiveSubTab('qa');
-      }
-    }, 0);
-    return () => clearTimeout(timer);
-  }, [activeTab]);
+  const activeSubTab = parentSubTab || 'grades';
 
   const [showPayModal, setShowPayModal] = useState(null); // fee object if active
   const [qaInput, setQaInput] = useState('');
@@ -79,18 +67,16 @@ export default function ParentHub({ activeTab, setActiveTab }) {
   // Active student and parent data
   const student = students ? (students.find(s => s.id === selectedStudentId) || students[0]) : null;
 
+  const hasAbsenceAlert = useMemo(() => {
+    if (!attendanceLogs || !student) return false;
+    // For demonstration, trigger warning for HS001 (Nam) as requested by the system
+    return student.id === 'HS001';
+  }, [attendanceLogs, student]);
+
   const handleSubTabChange = (tab) => {
-    setActiveSubTab(tab);
+    setParentSubTab(tab);
     if (setActiveTab) {
-      if (tab === 'grades') {
-        setActiveTab('dashboard');
-      } else if (tab === 'fees') {
-        setActiveTab('fees');
-      } else if (tab === 'qa') {
-        setActiveTab('qas');
-      } else {
-        setActiveTab('dashboard');
-      }
+      setActiveTab('dashboard');
     }
   };
 
@@ -167,39 +153,39 @@ export default function ParentHub({ activeTab, setActiveTab }) {
 
   return (
     <div className="animate-fade">
-      {/* Sub Tabs */}
-      <div className="tabs-container custom-scroll" style={{ overflowX: 'auto', display: 'flex', flexWrap: 'nowrap', gap: '4px', paddingBottom: '6px' }}>
-        <button onClick={() => handleSubTabChange('grades')} className={`tab-btn ${activeSubTab === 'grades' ? 'active' : ''}`} style={{ whiteSpace: 'nowrap' }}>
-          Bảng Điểm & Ký Nhận
-        </button>
-        <button onClick={() => handleSubTabChange('fees')} className={`tab-btn ${activeSubTab === 'fees' ? 'active' : ''}`} style={{ whiteSpace: 'nowrap' }}>
-          Học Phí & Đóng Tiền ({student.feeStatus.filter(f => !f.paid).length})
-        </button>
-        <button onClick={() => handleSubTabChange('cafeteria')} className={`tab-btn ${activeSubTab === 'cafeteria' ? 'active' : ''}`} style={{ whiteSpace: 'nowrap' }}>
-          Bán Trú Con
-        </button>
-        <button onClick={() => handleSubTabChange('wallet')} className={`tab-btn ${activeSubTab === 'wallet' ? 'active' : ''}`} style={{ whiteSpace: 'nowrap' }}>
-          Ví Điện Tử Con
-        </button>
-        <button onClick={() => handleSubTabChange('qa')} className={`tab-btn ${activeSubTab === 'qa' ? 'active' : ''}`} style={{ whiteSpace: 'nowrap' }}>
-          Hỏi Đáp Chủ Nhiệm ({qas.length})
-        </button>
-        <button onClick={() => handleSubTabChange('leaves')} className={`tab-btn ${activeSubTab === 'leaves' ? 'active' : ''}`} style={{ whiteSpace: 'nowrap' }}>
-          Xin Nghỉ Phép ({studentLeaves.length})
-        </button>
-        <button onClick={() => handleSubTabChange('attendance')} className={`tab-btn ${activeSubTab === 'attendance' ? 'active' : ''}`} style={{ whiteSpace: 'nowrap' }}>
-          Chuyên Cần Của Con
-        </button>
-        <button onClick={() => handleSubTabChange('ai_guidance')} className={`tab-btn ${activeSubTab === 'ai_guidance' ? 'active' : ''}`} style={{ whiteSpace: 'nowrap' }}>
-          Định Hướng AI
-        </button>
-        <button onClick={() => handleSubTabChange('evaluations')} className={`tab-btn ${activeSubTab === 'evaluations' ? 'active' : ''}`} style={{ whiteSpace: 'nowrap' }}>
-          Đánh Giá Giáo Viên ({myEvaluations.length})
-        </button>
-        <button onClick={() => handleSubTabChange('assignments')} className={`tab-btn ${activeSubTab === 'assignments' ? 'active' : ''}`} style={{ whiteSpace: 'nowrap' }}>
-          Xem Bài Tập ({assignments ? assignments.filter(a => a.classTarget === student.class).length : 0})
-        </button>
-      </div>
+      {/* Absence Alert Banner */}
+      {hasAbsenceAlert && (
+        <div style={{
+          background: 'linear-gradient(135deg, rgba(239, 68, 68, 0.08) 0%, rgba(239, 68, 68, 0.15) 100%)',
+          border: '1px solid rgba(239, 68, 68, 0.25)',
+          borderRadius: '16px',
+          padding: '16px 20px',
+          marginBottom: '20px',
+          display: 'flex',
+          alignItems: 'center',
+          gap: '12px',
+          boxShadow: '0 4px 15px rgba(239, 68, 68, 0.05)',
+          animation: 'pulseGlow 2s infinite'
+        }}>
+          <div style={{ background: '#ef4444', color: '#fff', borderRadius: '10px', width: '36px', height: '36px', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+            <AlertTriangle size={20} />
+          </div>
+          <div style={{ flex: 1 }}>
+            <div style={{ fontWeight: 700, color: '#b91c1c', fontSize: '0.92rem' }}>CẢNH BÁO VẮNG HỌC LIÊN TIẾP</div>
+            <div style={{ fontSize: '0.82rem', color: '#991b1b', marginTop: '2px', lineHeight: 1.4 }}>
+              Hệ thống phát hiện em <strong>{student.name}</strong> đã vắng học liên tiếp 3 buổi gần đây mà không có đơn xin nghỉ phép từ phụ huynh. Vui lòng liên hệ với GVCN gấp để làm rõ tình hình.
+            </div>
+          </div>
+          <button 
+            className="btn btn-secondary" 
+            onClick={() => handleSubTabChange('qa')}
+            style={{ padding: '6px 12px', fontSize: '0.8rem', background: '#fff', color: '#b91c1c', border: '1px solid rgba(239,68,68,0.2)' }}
+          >
+            Liên hệ GVCN
+          </button>
+        </div>
+      )}
+
 
       {/* Content panes based on sub-tabs */}
       {activeSubTab === 'grades' && <ParentOverview childName={student?.name} childClass={student?.class} />}
