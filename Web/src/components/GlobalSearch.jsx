@@ -97,11 +97,11 @@ export default function GlobalSearch({ onNavigate }) {
           display: 'flex', alignItems: 'center', gap: 8,
           background: 'rgba(99,102,241,0.06)', border: '1px solid rgba(99,102,241,0.15)',
           borderRadius: 10, padding: '6px 14px', cursor: 'pointer',
-          color: 'var(--text-muted)', fontSize: '0.82rem',
+          color: 'var(--text-secondary)', fontSize: '0.82rem',
           transition: 'all 0.15s',
         }}
         onMouseEnter={e => { e.currentTarget.style.background = 'rgba(99,102,241,0.1)'; e.currentTarget.style.color = 'var(--text-primary)'; }}
-        onMouseLeave={e => { e.currentTarget.style.background = 'rgba(99,102,241,0.06)'; e.currentTarget.style.color = 'var(--text-muted)'; }}
+        onMouseLeave={e => { e.currentTarget.style.background = 'rgba(99,102,241,0.06)'; e.currentTarget.style.color = 'var(--text-secondary)'; }}
       >
         <Search size={14} />
         <span>Tìm kiếm...</span>
@@ -145,7 +145,7 @@ export default function GlobalSearch({ onNavigate }) {
             }}
           />
           {query && (
-            <button onClick={() => setQuery('')} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-muted)' }}>
+            <button onClick={() => setQuery('')} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-secondary)' }} aria-label="Xóa tìm kiếm">
               <X size={16} />
             </button>
           )}

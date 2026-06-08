@@ -31,8 +31,8 @@ export default function TeacherOverview({ teacherName, onEnterGradesClick, onAss
     <div>
       <div className="page-head">
         <div>
-          <h1 className="page-title">Chào {honor.toLowerCase()} {shortName} {honor === 'Thầy' ? '🌟' : '🌷'}</h1>
-          <p className="page-sub">{honor} đang phụ trách <b style={{ color: 'var(--accent)' }}>3 lớp</b> · <b style={{ color: 'var(--accent)' }}>43 bài</b> cần chấm hôm nay.</p>
+          <h2 className="page-title">Chào {honor.toLowerCase()} {shortName} {honor === 'Thầy' ? '🌟' : '🌷'}</h2>
+          <p className="page-sub">{honor} đang phụ trách <b style={{ color: 'var(--accent-ink)' }}>3 lớp</b> · <b style={{ color: 'var(--accent-ink)' }}>43 bài</b> cần chấm hôm nay.</p>
         </div>
         <div className="flex gap-12">
           <button className="btn btn-ghost" onClick={onEnterGradesClick}><Edit3 size={17} /> Nhập điểm</button>
@@ -65,7 +65,7 @@ export default function TeacherOverview({ teacherName, onEnterGradesClick, onAss
                       <span className="flex items-center gap-6"><CheckCircle size={14} /> {c.attendance}% chuyên cần</span>
                     </div>
                   </div>
-                  <button className="icon-btn"><ChevronRight size={18} /></button>
+                  <button className="icon-btn" aria-label={`Chi tiết lớp ${c.name}`}><ChevronRight size={18} /></button>
                 </div>
               ))}
             </div>

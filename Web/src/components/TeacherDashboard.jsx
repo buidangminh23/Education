@@ -894,11 +894,11 @@ export default function TeacherDashboard({ activeTab: globalActiveTab, setActive
                     >
                       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '6px' }}>
                         <span className="badge badge-info">{assignment.classTarget} - {assignment.subject}</span>
-                        <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>Hạn: {assignment.deadline}</span>
+                        <span style={{ fontSize: '0.75rem', color: 'var(--text-secondary)' }}>Hạn: {assignment.deadline}</span>
                       </div>
-                      <h4 style={{ fontSize: '1rem', fontWeight: 700, margin: '6px 0', color: 'var(--text-primary)' }}>
+                      <h3 style={{ fontSize: '1rem', fontWeight: 700, margin: '6px 0', color: 'var(--text-primary)' }}>
                         {assignment.title}
-                      </h4>
+                      </h3>
                       <p style={{ 
                         fontSize: '0.85rem', 
                         color: 'var(--text-secondary)', 

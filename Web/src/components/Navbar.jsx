@@ -28,10 +28,10 @@ export default function Navbar({ setActiveTab }) {
   return (
     <header className="navbar">
       <div>
-        <h2 className="display" style={{ fontSize: '1.35rem', display: 'flex', alignItems: 'center', gap: '8px', color: 'var(--ink)' }}>
+        <h1 className="display" style={{ fontSize: '1.35rem', display: 'flex', alignItems: 'center', gap: '8px', color: 'var(--ink)', margin: 0 }}>
           {getRoleIcon()}
           <span>{getRoleLabel()}</span>
-        </h2>
+        </h1>
       </div>
 
       <div className="role-switcher-container" style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
@@ -58,7 +58,6 @@ export default function Navbar({ setActiveTab }) {
         {/* Notification Bell */}
         <NotificationCenter setActiveTab={setActiveTab} />
 
-        {/* Display Current User Session Name */}
         {userSession && (
           <div style={{ 
             display: 'flex', 
@@ -68,7 +67,7 @@ export default function Navbar({ setActiveTab }) {
             background: 'var(--accent-primary-glow)', 
             padding: '6px 14px', 
             borderRadius: '99px',
-            color: 'var(--accent-primary)',
+            color: 'var(--accent-ink)',
             fontWeight: 600,
             border: '1px solid var(--accent-soft)'
           }}>

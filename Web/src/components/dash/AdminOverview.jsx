@@ -41,7 +41,7 @@ export default function AdminOverview() {
     <div>
       <div className="page-head">
         <div>
-          <h1 className="page-title">Tổng quan nhà trường 🏫</h1>
+          <h2 className="page-title">Tổng quan nhà trường 🏫</h2>
           <p className="page-sub">Trường THPT Nguyễn Du · Năm học 2025–2026 · Học kỳ II</p>
         </div>
         <div className="flex gap-12">

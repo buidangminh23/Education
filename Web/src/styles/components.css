@@ -71,13 +71,13 @@
 }
 
 .nav-item.active {
-  background: var(--accent);
-  color: #fff;
+  background: var(--accent-soft);
+  color: var(--accent-ink);
   border: none;
   font-weight: 700;
-  box-shadow: var(--sh-pop);
+  box-shadow: none;
 }
-.nav-item.active svg { color: #fff; }
+.nav-item.active svg { color: var(--accent-ink); }
 
 .user-profile-widget {
   display: flex;

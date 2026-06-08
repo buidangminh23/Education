@@ -17,7 +17,7 @@
   /* Ink */
   --ink: #1d2138;
   --ink-soft: #565d7e;
-  --muted-c: #7a8099;
+  --muted-c: #565d7e;
 
   /* Brand + accent palette */
   --violet: #6c5ce7;  --violet-soft: #efecff;
@@ -87,9 +87,9 @@
 }
 
 /* Per-role accent theming (matches AppContext currentRole) */
-[data-role="student"] { --accent: var(--blue);   --accent-soft: var(--blue-soft);   --accent-ink: #2356c9; }
-[data-role="teacher"] { --accent: var(--mint);   --accent-soft: var(--mint-soft);   --accent-ink: #0a8b71; }
-[data-role="parent"]  { --accent: var(--orange); --accent-soft: var(--orange-soft); --accent-ink: #d35e16; }
+[data-role="student"] { --accent: var(--blue);   --accent-soft: var(--blue-soft);   --accent-ink: #1e40af; }
+[data-role="teacher"] { --accent: var(--mint);   --accent-soft: var(--mint-soft);   --accent-ink: #065f46; }
+[data-role="parent"]  { --accent: var(--orange); --accent-soft: var(--orange-soft); --accent-ink: #9a3412; }
 [data-role="admin"]   { --accent: var(--violet); --accent-soft: var(--violet-soft); --accent-ink: #4634c9; }
 
 /* Global animations */

@@ -275,7 +275,7 @@ h1 {
 }
 
 .tab-btn.active {
-  color: var(--accent-primary);
+  color: var(--accent-ink);
   font-weight: 600;
 }
 

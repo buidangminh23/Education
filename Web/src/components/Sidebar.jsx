@@ -98,9 +98,9 @@ export default function Sidebar({ activeTab, setActiveTab }) {
   const getBadgeColor = (id) => {
     if (id === 'deadlines') {
       const hasOverdue = upcomingDeadlines.some(d => new Date(d.date) < today);
-      return hasOverdue ? '#ef4444' : 'var(--accent-primary)';
+      return hasOverdue ? '#ef4444' : 'var(--accent-ink)';
     }
-    return 'var(--accent-primary)';
+    return 'var(--accent-ink)';
   };
 
   const getNavItems = () => {
@@ -241,7 +241,7 @@ export default function Sidebar({ activeTab, setActiveTab }) {
                         textAlign: 'left',
                         fontSize: '0.8rem',
                         fontWeight: isActive ? 700 : 500,
-                        color: isActive ? 'var(--accent-primary)' : 'var(--text-secondary)',
+                        color: isActive ? 'var(--accent-ink)' : 'var(--text-secondary)',
                         background: isActive
                           ? 'var(--accent-soft)'
                           : 'transparent',
@@ -267,8 +267,12 @@ export default function Sidebar({ activeTab, setActiveTab }) {
                       </span>
                       {badge !== null && (
                         <span style={{
-                          background: isActive ? getBadgeColor(item.id) : (getBadgeColor(item.id) === '#ef4444' ? 'rgba(239, 68, 68, 0.15)' : 'var(--accent-soft)'),
-                          color: isActive ? 'white' : getBadgeColor(item.id),
+                          background: isActive 
+                            ? (getBadgeColor(item.id) === '#ef4444' ? '#ef4444' : 'var(--accent-ink)')
+                            : (getBadgeColor(item.id) === '#ef4444' ? 'rgba(239, 68, 68, 0.15)' : 'var(--accent-soft)'),
+                          color: isActive 
+                            ? 'white'
+                            : (getBadgeColor(item.id) === '#ef4444' ? '#b91c1c' : 'var(--accent-ink)'),
                           borderRadius: '99px',
                           fontSize: '0.65rem',
                           fontWeight: 700,
@@ -317,7 +321,7 @@ export default function Sidebar({ activeTab, setActiveTab }) {
             style={{
               width: '100%', padding: '10px',
               display: 'flex', gap: '8px',
-              color: 'var(--accent-danger)',
+              color: '#b91c1c',
               borderColor: 'rgba(185, 28, 28, 0.15)',
               background: 'rgba(185, 28, 28, 0.04)'
             }}
@@ -336,7 +340,7 @@ export default function Sidebar({ activeTab, setActiveTab }) {
             <div style={{ fontWeight: 600, fontSize: '0.9rem', color: 'var(--text-primary)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
               {getProfileName()}
             </div>
-            <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>
+            <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)' }}>
               {getProfileSub()}
             </div>
           </div>

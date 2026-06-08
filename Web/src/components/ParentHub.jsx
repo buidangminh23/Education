@@ -524,9 +524,9 @@ export default function ParentHub({ activeTab, setActiveTab }) {
                         <div>
                           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
                             <span className="badge badge-info">{assignment.subject} • GV: {assignment.teacherName}</span>
-                            <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>Hạn: {assignment.deadline}</span>
+                            <span style={{ fontSize: '0.75rem', color: 'var(--text-secondary)' }}>Hạn: {assignment.deadline}</span>
                           </div>
-                          <h4 style={{ fontSize: '1.05rem', fontWeight: 700, margin: '8px 0', color: 'var(--text-primary)' }}>{assignment.title}</h4>
+                          <h3 style={{ fontSize: '1.05rem', fontWeight: 700, margin: '8px 0', color: 'var(--text-primary)' }}>{assignment.title}</h3>
                           <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', background: 'rgba(255,255,255,0.01)', padding: '10px', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.01)', margin: '8px 0', whiteSpace: 'pre-line' }}>
                             {assignment.content}
                           </p>

@@ -6,7 +6,7 @@ export function Stat({ icon: Icon, color, val, label, sub, trend, delay = '' }) 
       <div className="stat-top">
         <div className={`chip-ico bg-${color} t-${color}`}><Icon size={22} /></div>
         {trend != null && (
-          <span className="stat-trend" style={{ color: trend >= 0 ? 'var(--lime)' : 'var(--coral)' }}>
+          <span className="stat-trend" style={{ color: trend >= 0 ? '#166534' : '#b91c1c' }}>
             <TrendingUp size={14} style={{ transform: trend >= 0 ? 'none' : 'scaleY(-1)' }} /> {trend > 0 ? `+${trend}` : trend}
           </span>
         )}

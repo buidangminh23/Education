@@ -34,7 +34,7 @@ export default function ParentOverview({ childName, childClass }) {
     <div>
       <div className="page-head">
         <div>
-          <h1 className="page-title">Theo dõi bé {firstName} 🧡</h1>
+          <h2 className="page-title">Theo dõi bé {firstName} 🧡</h2>
           <p className="page-sub">Tổng quan tình hình học tập của con tại trường.</p>
         </div>
         <button className="btn btn-primary"><MessageSquare size={17} /> Nhắn giáo viên chủ nhiệm</button>
@@ -130,7 +130,7 @@ export default function ParentOverview({ childName, childClass }) {
                 <div style={{ fontWeight: 700, fontSize: '0.84rem' }}>Tài xế: Chú Bình</div>
                 <div className="muted" style={{ fontSize: '0.76rem' }}>Biển số 29B-123.45</div>
               </div>
-              <button className="icon-btn"><Phone size={17} /></button>
+              <button className="icon-btn" aria-label="Gọi điện cho tài xế"><Phone size={17} /></button>
             </div>
           </SectionCard>
 

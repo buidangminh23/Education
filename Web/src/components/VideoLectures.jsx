@@ -121,7 +121,7 @@ export default function VideoLectures() {
         // Grid Library view
         <div>
           <div style={{ marginBottom: '28px' }}>
-            <h1>Thư Viện Bài Giảng Trực Tuyến</h1>
+            <h2>Thư Viện Bài Giảng Trực Tuyến</h2>
             <p style={{ color: 'var(--text-secondary)' }}>Truy cập kho video bài giảng bổ trợ ôn thi THPT Quốc gia chất lượng cao.</p>
           </div>
 

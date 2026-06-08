@@ -550,7 +550,7 @@ export default function SchoolCalendar() {
             <CalendarIcon size={22} />
           </div>
           <div>
-            <h1 style={{ margin: 0, fontSize: '1.25rem', fontWeight: 700, color: 'var(--text-primary)' }}>Thời khóa biểu & Lịch công tác</h1>
+            <h2 style={{ margin: 0, fontSize: '1.25rem', fontWeight: 700, color: 'var(--text-primary)' }}>Thời khóa biểu & Lịch công tác</h2>
             <p style={{ margin: 0, fontSize: '0.8rem', color: 'var(--text-secondary)' }}>
               Theo dõi lịch giảng dạy, lịch học và mốc thời gian bài tập, học phí
             </p>

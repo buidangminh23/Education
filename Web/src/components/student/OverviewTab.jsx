@@ -46,7 +46,7 @@ function Stat({ icon: Icon, color, val, label, sub, trend, delay }) {
       <div className="stat-top">
         <div className={`chip-ico bg-${color} t-${color}`}><Icon size={22} /></div>
         {trend != null && (
-          <span className="stat-trend" style={{ color: trend >= 0 ? 'var(--lime)' : 'var(--coral)' }}>
+          <span className="stat-trend" style={{ color: trend >= 0 ? '#166534' : '#b91c1c' }}>
             <TrendingUp size={14} style={{ transform: trend >= 0 ? 'none' : 'scaleY(-1)' }} /> {trend > 0 ? `+${trend}` : trend}
           </span>
         )}
@@ -121,9 +121,9 @@ export default function OverviewTab({ student, setActiveTab }) {
     <div>
       <div className="page-head">
         <div>
-          <h1 className="page-title">Chào {firstName}, sẵn sàng học chưa? 🚀</h1>
+          <h2 className="page-title">Chào {firstName}, sẵn sàng học chưa? 🚀</h2>
           <p className="page-sub">
-            Hôm nay bạn có <b style={{ color: 'var(--accent)' }}>{myDeadlines.length} bài tập</b> đến hạn và <b style={{ color: 'var(--accent)' }}>{PERIODS.length} tiết học</b>.
+            Hôm nay bạn có <b style={{ color: 'var(--accent-ink)' }}>{myDeadlines.length} bài tập</b> đến hạn và <b style={{ color: 'var(--accent-ink)' }}>{PERIODS.length} tiết học</b>.
           </p>
         </div>
         <button className="btn btn-primary"><Plus size={18} /> Ghi chú mới</button>

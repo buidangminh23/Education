@@ -147,7 +147,7 @@ export default function ClassJournal() {
     <div className="animate-fade">
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
         <div>
-          <h1>Sổ Đầu Bài Điện Tử</h1>
+          <h2>Sổ Đầu Bài Điện Tử</h2>
           <p style={{ color: 'var(--text-secondary)' }}>Tuần 35 • Lớp {selectedClass} • Điểm thi đua trung bình: {averageRating}/10</p>
         </div>
         
