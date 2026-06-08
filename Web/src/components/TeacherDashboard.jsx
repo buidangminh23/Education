@@ -365,6 +365,9 @@ export default function TeacherDashboard({ activeTab: globalActiveTab, setActive
             handleSubTabChange('assignments');
             setShowCreateAssignmentModal(true);
           }}
+          onViewAssignmentsClick={() => {
+            handleSubTabChange('assignments');
+          }}
         />
       )}
 
